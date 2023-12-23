@@ -72,6 +72,9 @@
 
     <p>Applied Filters: {{ filter.data }}</p>
 
+        <!-- Display the number of results -->
+    <p>Number of Results: {{ specimens.count }}</p>
+
     <div class="container mt-5">
         <table class="table table-bordered">
             <thead class="thead-light">
@@ -158,6 +161,12 @@
             </tbody>
         </table>
     </div>
+
+
+    <div class="container mt-5">
+        <!-- Your table and specimen display code here -->
+    </div>
+
     <script>
         function resetFilters() {
             // Reset filter values to empty string
@@ -166,7 +175,7 @@
             filterFields.forEach(function (field) {
                 field.value = '';
             });
-    
+
             // Trigger a form submission
             form.submit();
         }
