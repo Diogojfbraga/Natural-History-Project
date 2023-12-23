@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # I wrote this code #
 
-# Imports all the models 
+# Imports the models 
 from .models import Expedition, Taxonomy, Specimen
 
 # Register the Expedition model with the Django Admin interface

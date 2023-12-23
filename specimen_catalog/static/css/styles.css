@@ -76,4 +76,7 @@ a:hover {
     margin-right: 10px; /* Adjust the value as needed */
 }
 
+.mt-5 {
+    margin-top: 1rem!important;
+}
 /* End of the code I wrote */

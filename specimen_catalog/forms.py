@@ -18,5 +18,7 @@ class TaxonomyForm(forms.ModelForm):
         model = Taxonomy
         fields = ['kingdom', 'phylum', 'highest_biostratigraphic_zone', 'class_name','identification_description', 'family', 'genus', 'species']
 
-
-    
+class NewSpecimenForm(forms.ModelForm):
+    class Meta:
+        model = Specimen
+        fields = ['catalog_number', 'created', 'expedition', 'taxonomy']

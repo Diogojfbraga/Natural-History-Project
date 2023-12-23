@@ -1,0 +1,15 @@
+<!-- specimen_catalog/templates/specimen_catalog/new_specimen.html -->
+{% extends 'specimen_catalog/master.html' %}
+
+{% block title %}New Specimen{% endblock %}
+
+{% block content %}
+    <h1>New Specimen</h1>
+
+    <form method="post" action="{% url 'new_specimen' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">Create New Specimen</button>
+    </form>
+{% endblock %}

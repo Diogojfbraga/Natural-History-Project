@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import DeleteView, UpdateView
 from .models import Specimen, Expedition, Taxonomy
-from .forms import SpecimenForm, ExpeditionForm, TaxonomyForm
+from .forms import SpecimenForm, ExpeditionForm, TaxonomyForm, NewSpecimenForm
 from django.contrib import messages
 from django.forms import inlineformset_factory
 from django.db.models import Q
@@ -119,4 +119,22 @@ class SpecimenDeleteView(DeleteView):
     model = Specimen
     template_name = 'specimen_catalog/specimen_delete_confirm.html'
     success_url = reverse_lazy('all_specimens')
+
+
+class NewSpecimenView(View):
+    template_name = 'specimen_catalog/new_specimen.html'
+
+    def get(self, request):
+        form = NewSpecimenForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = NewSpecimenForm(request.POST)
+        if form.is_valid():
+            # Save the new specimen to the database
+            new_specimen = form.save()
+            # Redirect to the detail page of the newly created specimen
+            return redirect('specimen_detail', pk=new_specimen.pk)
+
+        # return render(request, self.template_name, {'form': form})
 
