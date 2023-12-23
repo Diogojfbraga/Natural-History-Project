@@ -1,35 +1,35 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
-#I wrote this code #
+# I wrote this code #
 
-from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
+# Importing libraries
+from django.views import View
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import DeleteView, UpdateView
+from django.urls import reverse_lazy
+from django.core.paginator import Paginator, EmptyPage
 from .models import Specimen, Expedition, Taxonomy
 from .forms import SpecimenForm, ExpeditionForm, TaxonomyForm, NewSpecimenForm
-from django.contrib import messages
-from django.forms import inlineformset_factory
-from django.db.models import Q
-from django.views import View
 from .filters import SpecimenFilter
-from django.core.paginator import Paginator, EmptyPage
 
+# Index page view
 def index(request):
     return render(request, 'specimen_catalog/index.html')
 
+# Displays all specimens listed in a table
 class AllSpecimensView(ListView):
     model = Specimen
     template_name = 'specimen_catalog/all_specimens.html'
     context_object_name = 'specimens'
     queryset = Specimen.objects.all()
-    filterset_class = SpecimenFilter  # Add this line to specify the filter class
+    filterset_class = SpecimenFilter 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         filter = SpecimenFilter(self.request.GET, queryset=self.get_queryset())
 
-        # Paginate the specimens queryset with 20 specimens per page
+        ## PAGINATOR REFERENCE https://docs.djangoproject.com/en/5.0/topics/pagination/ ##
+        # Paginate the specimens queryset with 20 specimens per page #
         paginator = Paginator(filter.qs, 20)
         page = self.request.GET.get('page', 1)
 
@@ -39,7 +39,7 @@ class AllSpecimensView(ListView):
             specimens = paginator.page(paginator.num_pages)
 
         context['specimens'] = specimens
-        context['page_obj'] = specimens  # This is required for Django's built-in pagination
+        context['page_obj'] = specimens
         context['filter'] = filter
         return context
 
@@ -136,5 +136,13 @@ class NewSpecimenView(View):
             # Redirect to the detail page of the newly created specimen
             return redirect('specimen_detail', pk=new_specimen.pk)
 
-        # return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form})
 
+# End of the code I wrote #
+    
+
+# TO DELETE
+# from django.http import HttpResponseRedirect
+# from django.contrib import messages
+# from django.forms import inlineformset_factory
+# from django.db.models import Q

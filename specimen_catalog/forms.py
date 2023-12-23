@@ -1,5 +1,5 @@
 # specimen_catalog/forms.py
-import django_filters
+
 from django import forms
 from .models import Specimen, Taxonomy, Expedition
 
