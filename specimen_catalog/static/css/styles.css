@@ -1,0 +1,79 @@
+/* I wrote this code*/
+
+
+/* Reset margins and padding for the entire page */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Apply some basic styling to the form */
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    margin-right: 10px;
+}
+
+select {
+    margin-right: 20px;
+}
+
+/* Style the filter and reset buttons */
+button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+}
+
+button[type="reset"] {
+    background-color: #dc3545;
+    margin-left: 10px;
+}
+
+/* Style the table */
+.table {
+    width: 100%;
+    margin: 20px auto;  /* Center the table and provide top/bottom margin */
+    overflow-x: auto;  /* Allow horizontal scrolling if content is wider than the viewport */
+}
+
+.table th, .table td {
+    text-align: center;
+}
+
+/* Style the link to the detail page */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    width: 100%;
+    max-width: none; /* or your custom max-width value */
+}
+
+.button-container {
+    display: flex;
+    align-items: baseline; /* You can also use 'center' or other values */
+}
+
+/* Add space between the buttons */
+.button-container button {
+    margin-right: 10px; /* Adjust the value as needed */
+}
+
+/* End of the code I wrote */

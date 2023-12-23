@@ -1,0 +1,67 @@
+<!-- templates/specimen_catalog/specimen_detail.html -->
+{% extends 'specimen_catalog/master.html' %}
+
+{% block content %}
+    <h1>{{ specimen }}</h1>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <tbody>
+                <!-- Row 1: Specimen Documentation -->
+                <tr class="table-info">
+                    <th colspan="2"><h4>SPECIMEN DOCUMENTATION</h4></th>
+                </tr>
+                <tr>
+                    <td>Catalog number:</td>
+                    <td>{{ specimen.catalog_number }}</td>
+                </tr>
+                <tr>
+                    <td>Created:</td>
+                    <td>{{ specimen.created }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a href="{% url 'specimen_update' pk=specimen.pk %}" class="btn btn-warning">Update Specimen</a>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <tbody>
+                <!-- Row 2: Expedition Documentation -->
+                <tr class="table-success">
+                    <th colspan="2"><h4>EXPEDITION DOCUMENTATION</h4></th>
+                </tr>
+                <tr>
+                    <td>Expedition:</td>
+                    <td>{% if specimen.expedition %}{{ specimen.expedition.expedition }}, {{ specimen.expedition.continent }}, {{ specimen.expedition.country }}, {{ specimen.expedition.state_province }}, {{ specimen.expedition.term }}{% else %}N/A{% endif %}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a href="{% url 'expedition_update' pk=specimen.expedition_id %}" class="btn btn-warning">Update Expedition</a>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <tbody>
+                <!-- Row 3: Classification -->
+                <tr class="table-warning">
+                    <th colspan="2"><h4>CLASSIFICATION</h4></th>
+                </tr>
+                <tr>
+                    <td>Taxonomy:</td>
+                    <td>{% if specimen.taxonomy %}{{ specimen.taxonomy.kingdom }}, {{ specimen.taxonomy.phylum }}, {{ specimen.taxonomy.highest_biostratigraphic_zone }}, {{ specimen.taxonomy.class_name }}{% else %}N/A{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>Species:</td>
+                    <td>{% if specimen.taxonomy %}{{ specimen.taxonomy.species }}{% else %}N/A{% endif %}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <a href="{% url 'taxonomy_update' specimen_pk=specimen.pk %}" class="btn btn-warning">Update Taxonomy</a>
+    <a href="{% url 'specimen_delete' pk=specimen.pk %}" class="btn btn-danger">Delete Specimen</a>
+
+    <a href="{% url 'all_specimens' %}" class="btn btn-primary">Back to All Specimens</a>
+{% endblock %}

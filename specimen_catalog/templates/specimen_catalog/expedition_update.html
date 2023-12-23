@@ -1,0 +1,18 @@
+{% extends 'specimen_catalog/master.html' %}
+
+{% block content %}
+    <h1>Update Expedition</h1>
+
+    <form method="post" action="{% url 'expedition_update' pk=expedition.pk %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="button-container">
+            <button type="submit" class="btn btn-success">Update Expedition</button>
+            <a href="{% url 'all_specimens' %}" class="btn btn-primary">Back to All Specimens</a>
+        </div>
+        
+    </form>
+
+    
+{% endblock %}

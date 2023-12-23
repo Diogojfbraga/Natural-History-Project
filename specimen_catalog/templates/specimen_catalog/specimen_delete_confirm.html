@@ -1,0 +1,14 @@
+<!-- templates/specimen_catalog/specimen_delete_confirm.html -->
+{% extends 'specimen_catalog/master.html' %}
+
+{% block content %}
+    <h1>Confirm Deletion</h1>
+    <p>Are you sure you want to delete the specimen "{{ specimen }}"?</p>
+    <form method="post" action="{% url 'specimen_delete' pk=specimen.pk %}">
+        {% csrf_token %}
+        <div class="button-container">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a href="{% url 'specimen_detail' pk=specimen.pk %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+{% endblock %}

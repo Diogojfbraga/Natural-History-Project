@@ -1,0 +1,19 @@
+<!-- specimen_catalog/templates/specimen_catalog/index.html -->
+
+{% extends 'specimen_catalog/base.html' %}
+
+{% block title %}Natural History Project Page{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="text-center">
+        <h1>Welcome to Natural History Project</h1>
+        <p>This is the index page.</p>
+        <a class="btn btn-primary" href="{% url 'all_specimens' %}">All Specimens</a>
+        
+    </div>
+</div>
+
+{% endblock %}
+
+
