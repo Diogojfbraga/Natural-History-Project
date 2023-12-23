@@ -13,24 +13,10 @@ from django.forms import inlineformset_factory
 from django.db.models import Q
 from django.views import View
 from .filters import SpecimenFilter
+from django.core.paginator import Paginator, EmptyPage
 
 def index(request):
     return render(request, 'specimen_catalog/index.html')
-
-# class AllSpecimensView(ListView):
-#     model = Specimen
-#     template_name = 'specimen_catalog/all_specimens.html'
-#     context_object_name = 'specimens'
-#     queryset = Specimen.objects.all()
-  
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-
-#         return context
-
-#     def get_queryset(self):
-#         queryset = super().get_queryset()
-#         return queryset
 
 class AllSpecimensView(ListView):
     model = Specimen
@@ -42,7 +28,18 @@ class AllSpecimensView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         filter = SpecimenFilter(self.request.GET, queryset=self.get_queryset())
-        context['specimens'] = filter.qs  # Apply the filters to the queryset
+
+        # Paginate the specimens queryset with 20 specimens per page
+        paginator = Paginator(filter.qs, 20)
+        page = self.request.GET.get('page', 1)
+
+        try:
+            specimens = paginator.page(page)
+        except EmptyPage:
+            specimens = paginator.page(paginator.num_pages)
+
+        context['specimens'] = specimens
+        context['page_obj'] = specimens  # This is required for Django's built-in pagination
         context['filter'] = filter
         return context
 

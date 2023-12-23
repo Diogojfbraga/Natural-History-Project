@@ -67,15 +67,30 @@
         </div>
     </form>
     
-    
-    
-
-    <p>Applied Filters: {{ filter.data }}</p>
-
-        <!-- Display the number of results -->
-    <p>Number of Results: {{ specimens.count }}</p>
+     <!-- Display the number of results -->
+     <p>Number of Results: {{ specimens.paginator.count }}</p>
 
     <div class="container mt-5">
+        <div class="container mt-3">
+            <!-- Pagination controls -->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if specimens.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ specimens.previous_page_number }}">previous</a>
+                    {% endif %}
+    
+                    <span class="current">
+                        Page {{ specimens.number }} of {{ specimens.paginator.num_pages }}
+                    </span>
+    
+                    {% if specimens.has_next %}
+                        <a href="?page={{ specimens.next_page_number }}">next</a>
+                        <a href="?page={{ specimens.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
         <table class="table table-bordered">
             <thead class="thead-light">
                 <tr>
@@ -163,8 +178,25 @@
     </div>
 
 
-    <div class="container mt-5">
-        <!-- Your table and specimen display code here -->
+    <div class="container mt-3">
+        <!-- Pagination controls -->
+        <div class="pagination">
+            <span class="step-links">
+                {% if specimens.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ specimens.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ specimens.number }} of {{ specimens.paginator.num_pages }}
+                </span>
+
+                {% if specimens.has_next %}
+                    <a href="?page={{ specimens.next_page_number }}">next</a>
+                    <a href="?page={{ specimens.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
     </div>
 
     <script>
