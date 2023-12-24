@@ -137,6 +137,27 @@ class NewSpecimenView(View):
             return redirect('specimen_detail', pk=new_specimen.pk)
 
         return render(request, self.template_name, {'form': form})
+    
+
+
+class NewTaxonomyView(View):
+    template_name = 'specimen_catalog/new_taxonomy.html'
+
+    def get(self, request):
+        taxonomy_form = TaxonomyForm()
+        return render(request, self.template_name, {'taxonomy_form': taxonomy_form})
+
+    def post(self, request):
+        taxonomy_form = TaxonomyForm(request.POST)
+
+        if taxonomy_form.is_valid():
+            # Save the new taxonomy to the database
+            new_taxonomy = taxonomy_form.save()
+
+            # Redirect to the "Create New Specimen" page
+            return redirect('new_specimen')
+
+        return render(request, self.template_name, {'taxonomy_form': taxonomy_form})
 
 # End of the code I wrote #
     
