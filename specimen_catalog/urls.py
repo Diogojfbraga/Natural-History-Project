@@ -3,7 +3,7 @@
 # Importing necessary libraries
 from django.urls import path
 from . import views
-from .views import AllSpecimensView, SpecimenDetailView, SpecimenView, ExpeditionUpdateView, TaxonomyUpdateView, SpecimenDeleteView, NewSpecimenView, NewTaxonomyView
+from .views import AllSpecimensView, SpecimenDetailView, SpecimenView, ExpeditionUpdateView, TaxonomyUpdateView, SpecimenDeleteView, NewSpecimenView, NewTaxonomyView, NewExpeditionView
 
 # URL patterns defines routes for specimen_catalog app
 urlpatterns = [
@@ -27,6 +27,8 @@ urlpatterns = [
     path('new_specimen/', NewSpecimenView.as_view(), name='new_specimen'),
 
     path('new_taxonomy/', NewTaxonomyView.as_view(), name='new_taxonomy'),
+
+    path('new_expedition/', NewExpeditionView.as_view(), name='new_expedition'),
 ]
 
 # End of the code I wrote #
