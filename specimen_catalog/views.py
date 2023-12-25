@@ -11,6 +11,7 @@ from django.core.paginator import Paginator, EmptyPage
 from .models import Specimen, Expedition, Taxonomy
 from .forms import SpecimenForm, ExpeditionForm, TaxonomyForm, NewSpecimenForm
 from .filters import SpecimenFilter
+from django.contrib import messages
 
 # Index page view
 def index(request):
@@ -154,6 +155,9 @@ class NewTaxonomyView(View):
             # Save the new taxonomy to the database
             new_taxonomy = taxonomy_form.save()
 
+            # Add a success message
+            messages.success(request, 'New taxonomy created successfully.')
+
             # Redirect to the "Create New Specimen" page
             return redirect('new_specimen')
 
@@ -172,6 +176,9 @@ class NewExpeditionView(View):
         if expedition_form.is_valid():
             # Save the new expedition to the database
             new_expedition = expedition_form.save()
+
+            # Add a success message
+            messages.success(request, 'New expedition created successfully.')
 
             # Redirect to the "Create New Specimen" page
             return redirect('new_specimen')
