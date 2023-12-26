@@ -1,9 +1,8 @@
-# I wrote this code #
-
 # Importing necessary libraries
 from django.urls import path
 from . import views
-from .views import AllSpecimensView, SpecimenDetailView, SpecimenView, ExpeditionUpdateView, TaxonomyUpdateView, SpecimenDeleteView, NewSpecimenView, NewTaxonomyView, NewExpeditionView
+from .views import (AllSpecimensView, SpecimenDetailView, ExpeditionUpdateView, TaxonomyUpdateView, 
+                    SpecimenDeleteView, NewSpecimenView, NewTaxonomyView, NewExpeditionView)
 
 # URL patterns defines routes for specimen_catalog app
 urlpatterns = [
@@ -12,9 +11,7 @@ urlpatterns = [
     # Displays all specimens listed in a table                                                                 
     path('all_specimens/', AllSpecimensView.as_view(), name='all_specimens'),  
     # View details of a specific specimen                            
-    path('specimen/detail/<int:pk>/', SpecimenDetailView.as_view(), name='specimen_detail'), 
-    # View a specific specimen               
-    path('specimen/<int:pk>/', SpecimenView.as_view(), name='specimen'),    
+    path('specimen/detail/<int:pk>/', SpecimenDetailView.as_view(), name='specimen_detail'),  
     # Update a specific specimen record
     path('specimen/<int:pk>/update/', views.SpecimenUpdateView.as_view(), name='specimen_update'),
     # Update a expediation associated with a specimen
@@ -25,10 +22,8 @@ urlpatterns = [
     path('specimen/<int:pk>/delete/', SpecimenDeleteView.as_view(), name='specimen_delete'),
     # Creates a new specimen
     path('new_specimen/', NewSpecimenView.as_view(), name='new_specimen'),
-
+    # Creates a new taxonomy
     path('new_taxonomy/', NewTaxonomyView.as_view(), name='new_taxonomy'),
-
+    # Creates a new expedition
     path('new_expedition/', NewExpeditionView.as_view(), name='new_expedition'),
 ]
-
-# End of the code I wrote #

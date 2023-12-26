@@ -34,13 +34,18 @@
                 </tr>
                 <tr>
                     <td>Expedition:</td>
-                    <td>{% if specimen.expedition %}{{ specimen.expedition.expedition }}, {{ specimen.expedition.continent }}, {{ specimen.expedition.country }}, {{ specimen.expedition.state_province }}, {{ specimen.expedition.term }}{% else %}N/A{% endif %}</td>
+                    <td>{% if specimen.expedition %}{{ specimen.expedition.expedition }}, 
+                        {{ specimen.expedition.continent }}, {{ specimen.expedition.country }}, 
+                        {{ specimen.expedition.state_province }}, {{ specimen.expedition.term }}
+                        {% else %}N/A{% endif %}</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <a href="{% url 'expedition_update' pk=specimen.expedition_id %}" class="btn btn-warning">Update Expedition</a>
+    {% if specimen.expedition_id %}
+        <a href="{% url 'expedition_update' pk=specimen.expedition_id %}" class="btn btn-warning">Update Expedition</a>
+    {% endif %}
 
     <div class="table-responsive">
         <table class="table table-bordered">

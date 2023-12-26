@@ -16,7 +16,7 @@
         <script>
             setTimeout(function() {
                 hideMessage();
-            }, 5000);
+            }, 1500);
 
             function hideMessage() {
                 var successMessages = document.getElementsByClassName('alert success');
@@ -24,7 +24,7 @@
                     successMessages[i].style.opacity = '0';
                     setTimeout(function() {
                         successMessages[i].style.display = 'none';
-                    }, 400);
+                    }, 200);
                 }
             }
         </script>

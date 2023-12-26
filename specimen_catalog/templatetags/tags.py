@@ -1,9 +1,10 @@
-# specimen_catalog/templatetags/tags.py
-import datetime
 from django import template
+from datetime import datetime
 
 register = template.Library()
 
 @register.simple_tag
-def todays_date():
-    return datetime.datetime.now().strftime("%d %b, %Y")
+def current_datetime():
+    now = datetime.now()
+    formatted_date = now.strftime("%d-%m-%y %H:%M")
+    return formatted_date
