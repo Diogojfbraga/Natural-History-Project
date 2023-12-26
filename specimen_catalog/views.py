@@ -11,6 +11,7 @@ from django.core.paginator import Paginator, EmptyPage
 from .models import Specimen, Expedition, Taxonomy
 from .forms import SpecimenForm, ExpeditionForm, TaxonomyForm, NewSpecimenForm
 from .filters import SpecimenFilter
+from django.contrib import messages
 
 # Index page view
 def index(request):
@@ -137,6 +138,52 @@ class NewSpecimenView(View):
             return redirect('specimen_detail', pk=new_specimen.pk)
 
         return render(request, self.template_name, {'form': form})
+    
+
+
+class NewTaxonomyView(View):
+    template_name = 'specimen_catalog/new_taxonomy.html'
+
+    def get(self, request):
+        taxonomy_form = TaxonomyForm()
+        return render(request, self.template_name, {'taxonomy_form': taxonomy_form})
+
+    def post(self, request):
+        taxonomy_form = TaxonomyForm(request.POST)
+
+        if taxonomy_form.is_valid():
+            # Save the new taxonomy to the database
+            new_taxonomy = taxonomy_form.save()
+
+            # Add a success message
+            messages.success(request, 'New taxonomy created successfully.')
+
+            # Redirect to the "Create New Specimen" page
+            return redirect('new_specimen')
+
+        return render(request, self.template_name, {'taxonomy_form': taxonomy_form})
+    
+class NewExpeditionView(View):
+    template_name = 'specimen_catalog/new_expedition.html'
+
+    def get(self, request):
+        expedition_form = ExpeditionForm()
+        return render(request, self.template_name, {'expedition_form': expedition_form})
+
+    def post(self, request):
+        expedition_form = ExpeditionForm(request.POST)
+
+        if expedition_form.is_valid():
+            # Save the new expedition to the database
+            new_expedition = expedition_form.save()
+
+            # Add a success message
+            messages.success(request, 'New expedition created successfully.')
+
+            # Redirect to the "Create New Specimen" page
+            return redirect('new_specimen')
+
+        return render(request, self.template_name, {'expedition_form': expedition_form})
 
 # End of the code I wrote #
     

@@ -6,10 +6,38 @@
 {% block content %}
     <h1>New Specimen</h1>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert success">
+                <span class="closebtn" onclick="hideMessage();">&times;</span>
+                <strong>{{ message }}</strong>
+            </div>
+        {% endfor %}
+        <script>
+            setTimeout(function() {
+                hideMessage();
+            }, 5000);
+
+            function hideMessage() {
+                var successMessages = document.getElementsByClassName('alert success');
+                for (var i = 0; i < successMessages.length; i++) {
+                    successMessages[i].style.opacity = '0';
+                    setTimeout(function() {
+                        successMessages[i].style.display = 'none';
+                    }, 400);
+                }
+            }
+        </script>
+    {% endif %}
+
     <form method="post" action="{% url 'new_specimen' %}">
         {% csrf_token %}
         {{ form.as_p }}
 
-        <button type="submit">Create New Specimen</button>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary custom-btn">Create New Specimen</button>
+            <a href="{% url 'new_taxonomy' %}" class="btn btn-info custom-btn">Create New Taxonomy</a>
+            <a href="{% url 'new_expedition' %}" class="btn btn-info custom-btn">Create New Expedition</a>
+        </div>
     </form>
 {% endblock %}
