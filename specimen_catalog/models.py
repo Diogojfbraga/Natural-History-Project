@@ -24,8 +24,18 @@ class Taxonomy(models.Model):
     genus = models.CharField(max_length=255, null=False, blank=True)
     species = models.CharField(max_length=255, null=False, blank=True)
 
+    # To be able to be seen when added from the drop down to a new specimem
     def __str__(self):
-        return f"Taxonomy {self.species}"
+            return (
+        f"({self.kingdom}/"
+        f"{self.phylum}/"
+        f"{self.highest_biostratigraphic_zone}/"
+        f"{self.class_name}/"
+        f"{self.identification_description}/"
+        f"{self.family}/"
+        f"{self.genus}/"
+        f"{self.species})"
+    )
  
 #This code defines a Django model named Specimen and it's information
 class Specimen(models.Model):

@@ -13,4 +13,11 @@ class SpecimenFilter(django_filters.FilterSet):
 
     class Meta:
         model = Specimen
-        fields = ['taxonomy__kingdom', 'taxonomy__phylum', 'taxonomy__highest_biostratigraphic_zone', 'taxonomy__class_name', 'taxonomy__family', 'taxonomy__genus', 'taxonomy__species']
+        fields = ['taxonomy__kingdom', 
+                  'taxonomy__phylum', 
+                  'taxonomy__highest_biostratigraphic_zone', 
+                  'taxonomy__class_name', 
+                  'taxonomy__family', 
+                  'taxonomy__genus', 
+                  'taxonomy__species'
+                  ]
