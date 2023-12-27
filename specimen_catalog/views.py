@@ -287,4 +287,3 @@ class NewExpeditionView(View):
 
         # Render the page with the form and error messages
         return render(request, self.template_name, {'expedition_form': expedition_form})
-    

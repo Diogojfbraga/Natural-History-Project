@@ -1,7 +1,5 @@
 from django.db import models
 
-#/* I WROTE THIS CODE */#
-
 #This code defines a Django model named Expedition and it's information
 class Expedition(models.Model):
     expedition_id = models.AutoField(primary_key=True)
@@ -42,7 +40,3 @@ class Specimen(models.Model):
 
     def __str__(self):
         return f"Specimen {self.specimen_id}"
-
-   
-# End of the code I wrote #
-

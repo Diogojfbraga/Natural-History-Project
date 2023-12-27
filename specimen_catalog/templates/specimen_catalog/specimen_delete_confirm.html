@@ -1,10 +1,10 @@
-<!-- templates/specimen_catalog/specimen_delete_confirm.html -->
+<!-- specimen_delete_confirm.html page-->
 {% extends 'specimen_catalog/master.html' %}
 
 {% block content %}
     <h1>Confirm Deletion</h1>
     <p>Are you sure you want to delete the specimen "{{ specimen }}"?</p>
-    <form method="post" action="{% url 'specimen_delete' pk=specimen.pk %}">
+    <form method="post" class="form-control" action="{% url 'specimen_delete' pk=specimen.pk %}">
         {% csrf_token %}
         <div class="button-container">
             <button type="submit" class="btn btn-danger">Delete</button>

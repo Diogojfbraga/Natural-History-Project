@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from .models import Expedition, Taxonomy, Specimen
 from .filters import SpecimenFilter
 from .views import AllSpecimensView
-from .forms import TaxonomyForm, NewSpecimenForm
+from .forms import TaxonomyForm, NewSpecimenForm, SpecimenForm 
 
 class IndexViewTests(TestCase):
     def test_index_view_uses_correct_template(self):
@@ -86,7 +86,6 @@ class SpecimenUpdateViewTests(TestCase):
     def test_specimen_update_view_returns_200_status_code(self):
         response = self.client.get(reverse('specimen_update', kwargs={'pk': self.specimen.pk}))
         self.assertEqual(response.status_code, 200)
-
 
 class ExpeditionUpdateViewTests(TestCase):
     def setUp(self):
@@ -227,7 +226,6 @@ class NewTaxonomyViewTests(TestCase):
         data = {
             'kingdom': 'Animalia',
             'phylum': 'Chordata',
-            # Include other required fields based on your form
         }
         response = self.client.post(reverse('new_taxonomy'), data)
         self.assertEqual(response.status_code, 302)  # Expecting a redirect

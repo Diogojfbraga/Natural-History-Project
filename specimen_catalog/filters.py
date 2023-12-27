@@ -1,7 +1,7 @@
-# specimen_catalog/filters.py
 import django_filters
 from .models import Specimen
 
+# Filter specimens table by the following
 class SpecimenFilter(django_filters.FilterSet):
     taxonomy__kingdom = django_filters.CharFilter(label="Kingdom", lookup_expr="icontains")
     taxonomy__phylum = django_filters.CharFilter(label="Phylum", lookup_expr="icontains")

@@ -1,5 +1,3 @@
-# specimen_catalog/forms.py
-
 from django import forms
 from .models import Specimen, Taxonomy, Expedition
 

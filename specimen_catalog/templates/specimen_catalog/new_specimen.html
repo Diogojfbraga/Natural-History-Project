@@ -1,4 +1,4 @@
-<!-- specimen_catalog/templates/specimen_catalog/new_specimen.html -->
+<!-- new_specimen.html -->
 {% extends 'specimen_catalog/master.html' %}
 
 {% block title %}New Specimen{% endblock %}
@@ -24,14 +24,15 @@
         </script>
     {% endif %}
 
-    <form method="post" action="{% url 'new_specimen' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-
+    <form method="post" class="form-control" action="{% url 'new_specimen' %}">
         <div class="form-group">
+            {% csrf_token %}
+            {{ form.as_p }}
+        </div>
+        <div>
             <button type="submit" class="btn btn-primary custom-btn">Create New Specimen</button>
-            <a href="{% url 'new_taxonomy' %}" class="btn btn-info custom-btn">Create New Taxonomy</a>
-            <a href="{% url 'new_expedition' %}" class="btn btn-info custom-btn">Create New Expedition</a>
+            <a href="{% url 'new_taxonomy' %}" class="btn btn-primary custom-btn">Create New Taxonomy</a>
+            <a href="{% url 'new_expedition' %}" class="btn btn-primary custom-btn">Create New Expedition</a>
         </div>
     </form>
 {% endblock %}

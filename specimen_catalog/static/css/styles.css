@@ -1,6 +1,3 @@
-/* I wrote this code*/
-
-
 /* Reset margins and padding for the entire page */
 * {
     margin: 0;
@@ -13,13 +10,13 @@ html, body {
     padding: 0;
 }
 
-/* styles.css or your custom CSS file */
-
-
-
-/* Apply some basic styling to the form */
+/* form styling */
 form {
     margin-bottom: 20px;
+}
+
+.form-group {
+    margin-top: 20px; 
 }
 
 label {
@@ -30,7 +27,7 @@ select {
     margin-right: 20px;
 }
 
-/* Style the filter and reset buttons */
+/* filter and reset buttons */
 button {
     margin-top: 10px;
     padding: 5px 10px;
@@ -44,18 +41,18 @@ button[type="reset"] {
     margin-left: 10px;
 }
 
-/* Style the table */
+/* table */
 .table {
     width: 100%;
-    margin: 20px auto;  /* Center the table and provide top/bottom margin */
-    overflow-x: auto;  /* Allow horizontal scrolling if content is wider than the viewport */
+    margin: 20px auto;  
+    overflow-x: auto;  
 }
 
 .table th, .table td {
     text-align: center;
 }
 
-/* Style the link to the detail page */
+/* detail page*/
 a {
     color: #007bff;
     text-decoration: none;
@@ -67,17 +64,17 @@ a:hover {
 
 .container {
     width: 100%;
-    max-width: none; /* or your custom max-width value */
+    max-width: none; 
 }
 
+/* buttons style */
 .button-container {
     display: flex;
-    align-items: baseline; /* You can also use 'center' or other values */
+    align-items: baseline; 
 }
 
-/* Add space between the buttons */
 .button-container button {
-    margin-right: 10px; /* Adjust the value as needed */
+    margin-right: 10px; 
 }
 
 button {
@@ -112,9 +109,9 @@ button {
     color: black;
 }
 
-
+/* navigation bar */
 .custom-navbar {
-    background-color: #1f5a21 !important;
+    background-color: #5E7F7E !important;
 }
 
 .navbar-brand {
@@ -127,17 +124,17 @@ button {
     white-space: nowrap;
 }
 
+/* custom button */
 .custom-btn {
-    margin-bottom: 0; /* Remove bottom margin */
+    margin-bottom: 0; 
     background-color: rgb(10, 92, 21);
 }
 
+/* custom table */
 .custom-table th, .custom-table td {
     text-align: left;
 }
 
 .custom-table th {
-    width: 30%; /* Adjust the width as needed */
+    width: 30%; 
 }
-
-/* End of the code I wrote */

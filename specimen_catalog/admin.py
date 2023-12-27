@@ -1,8 +1,6 @@
-from django.contrib import admin
-
-# I wrote this code #
 
 # Imports the models 
+from django.contrib import admin
 from .models import Expedition, Taxonomy, Specimen
 
 # Register the Expedition model with the Django Admin interface
@@ -20,5 +18,3 @@ class TaxonomyAdmin(admin.ModelAdmin):
 @admin.register(Specimen)
 class SpecimenAdmin(admin.ModelAdmin):
     list_display = ('specimen_id', 'catalog_number', 'created', 'taxonomy', 'expedition')
-    
-# End of code I wrote#

@@ -32,16 +32,16 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # I wrote this code #
-    'specimen_catalog.apps.SpecimenCatalogConfig',
-    'django_extensions',
-    # End of code I wrote #
+    'specimen_catalog.apps.SpecimenCatalogConfig', #My app
+    'django_extensions',    #Added other extensions
+    'django_filters',       # Filter feature
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_filters',
+
 ]
 
 MIDDLEWARE = [
