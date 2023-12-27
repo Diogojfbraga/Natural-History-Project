@@ -5,18 +5,18 @@
     <h1>{{ specimen }}</h1>
 
     <div class="table-responsive">
-        <table class="table table-bordered">
+        <table class="table table-bordered custom-table">
             <tbody>
                 <!-- Row 1: Specimen Documentation -->
                 <tr class="table-info">
                     <th colspan="2"><h4>SPECIMEN DOCUMENTATION</h4></th>
                 </tr>
                 <tr>
-                    <td>Catalog number:</td>
+                    <td>Catalog Number:</td>
                     <td>{{ specimen.catalog_number }}</td>
                 </tr>
                 <tr>
-                    <td>Created:</td>
+                    <td>Specimen Number:</td>
                     <td>{{ specimen.created }}</td>
                 </tr>
             </tbody>
@@ -26,7 +26,7 @@
     <a href="{% url 'specimen_update' pk=specimen.pk %}" class="btn btn-warning">Update Specimen</a>
 
     <div class="table-responsive">
-        <table class="table table-bordered">
+        <table class="table table-bordered custom-table">
             <tbody>
                 <!-- Row 2: Expedition Documentation -->
                 <tr class="table-success">
@@ -48,7 +48,7 @@
     {% endif %}
 
     <div class="table-responsive">
-        <table class="table table-bordered">
+        <table class="table table-bordered custom-table">
             <tbody>
                 <!-- Row 3: Classification -->
                 <tr class="table-warning">

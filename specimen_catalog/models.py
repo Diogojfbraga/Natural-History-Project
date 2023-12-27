@@ -37,6 +37,9 @@ class Specimen(models.Model):
     expedition = models.ForeignKey('Expedition', on_delete=models.CASCADE, null=True, blank=True)
     taxonomy = models.ForeignKey(Taxonomy, on_delete=models.CASCADE, null=True, blank=True)
 
+    class Meta:
+        ordering = ['-specimen_id']    
+
     def __str__(self):
         return f"Specimen {self.specimen_id}"
 

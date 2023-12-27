@@ -132,4 +132,12 @@ button {
     background-color: rgb(10, 92, 21);
 }
 
+.custom-table th, .custom-table td {
+    text-align: left;
+}
+
+.custom-table th {
+    width: 30%; /* Adjust the width as needed */
+}
+
 /* End of the code I wrote */

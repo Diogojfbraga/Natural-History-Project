@@ -10,13 +10,12 @@ from django.core.exceptions import ValidationError
 from .models import Specimen, Expedition, Taxonomy      # Models
 from .forms import SpecimenForm, ExpeditionForm, TaxonomyForm, NewSpecimenForm  # Forms
 from .filters import SpecimenFilter     # Filters
-from django.http import Http404, HttpResponseServerError
+from django.http import Http404, HttpResponseServerError, HttpResponseRedirect, JsonResponse
 
 # Index page view
 def index(request):
     return render(request, 'specimen_catalog/index.html')
 
-# Displays all specimens listed in a table
 class AllSpecimensView(ListView):
     model = Specimen
     template_name = 'specimen_catalog/all_specimens.html'
@@ -29,17 +28,15 @@ class AllSpecimensView(ListView):
         context = super().get_context_data(**kwargs)
         
         # Error Handling
+        filter = None
         try:
             # Attempts to create a SpecimenFilter instance with user-provided filter parameters
             filter = SpecimenFilter(self.request.GET, queryset=self.get_queryset())
         except ValidationError as e:
-             # Handles ValidationError by displaying an error message to the user
+            # Handles ValidationError by displaying an error message to the user
             messages.error(self.request, f"Invalid filter parameters: {e}")
             # Create a SpecimenFilter instance with an empty queryset to prevent further errors
-            filter = SpecimenFilter(queryset=Specimen.objects.none()) 
-
-        # Creates a SpecimenFilter instance with the request GET parameters and the current queryset
-        filter = SpecimenFilter(self.request.GET, queryset=self.get_queryset())
+            filter = SpecimenFilter(queryset=Specimen.objects.none())
 
         # Paginates the specimens queryset with 20 specimens per page 
         paginator = Paginator(filter.qs, 20)
@@ -57,12 +54,17 @@ class AllSpecimensView(ListView):
         context['specimens'] = specimens
         context['page_obj'] = specimens
         context['filter'] = filter
+
+        # Adds successfully when views is rendered
+        messages.success(self.request, "View rendered successfully!")
+
         return context
 
     def get_queryset(self):
         # Gets the default queryset for the Specimen model
         queryset = super().get_queryset()
-        return queryset
+        return queryset.order_by('-specimen_id')
+
 
 # Displays a single speciment with its details, taxonomy and expedtion
 class SpecimenDetailView(DetailView):
@@ -186,17 +188,21 @@ class SpecimenDeleteView(DeleteView):
         try:
             return super().get(request, *args, **kwargs)
         except Http404:
-            # Handle thes case where the specimen is not found
             messages.error(request, "Specimen not found")
-            return redirect('all_specimens')  # Redirects to all_specimens
+            return redirect('all_specimens')
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         try:
-            return super().delete(request, *args, **kwargs)
+            response = super().form_valid(form)
+            messages.success(self.request, 'Specimen deleted successfully.')
+            return render(self.request, 'specimen_catalog/specimen_deleted.html')
         except Exception as e:
-            # Handles other exceptions that may occur during deletion
-            messages.error(request, f"Error deleting specimen: {e}")
-            return redirect('all_specimens')  # Redirects to all_specimens 
+            messages.error(self.request, f"Error deleting specimen: {e}")
+            return redirect('all_specimens')
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error deleting specimen. Please try again.')
+        return super().form_invalid(form)
 
 # View that allows to create a new specimen record        
 class NewSpecimenView(View):
@@ -281,3 +287,4 @@ class NewExpeditionView(View):
 
         # Render the page with the form and error messages
         return render(request, self.template_name, {'expedition_form': expedition_form})
+    
