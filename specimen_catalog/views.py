@@ -23,7 +23,7 @@ class AllSpecimensView(ListView):
     template_name = 'specimen_catalog/all_specimens.html'
     context_object_name = 'specimens'
     queryset = Specimen.objects.all()
-    filterset_class = SpecimenFilter  # Import your SpecimenFilter class
+    filterset_class = SpecimenFilter 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -13,13 +13,13 @@ urlpatterns = [
     path('all_specimens/', AllSpecimensView.as_view(), name='all_specimens'),  
     # View details of a specific specimen                            
     path('specimen/detail/<int:pk>/', SpecimenDetailView.as_view(), name='specimen_detail'),  
-    # Update a specific specimen record
+    # Updates a specific specimen record
     path('specimen/<int:pk>/update/', views.SpecimenUpdateView.as_view(), name='specimen_update'),
-    # Update a expediation associated with a specimen
+    # Updates a expediation associated with a specimen
     path('expedition_update/<int:pk>/', ExpeditionUpdateView.as_view(), name='expedition_update'),
-    # Update a taxonomy associated with a specimen
+    # Updates a taxonomy associated with a specimen
     path('taxonomy_update/<int:specimen_pk>/', TaxonomyUpdateView.as_view(), name='taxonomy_update'),
-    # Delete a specific specimen
+    # Deletes a specific specimen
     path('specimen/<int:pk>/delete/', SpecimenDeleteView.as_view(), name='specimen_delete'),
     # Creates a new specimen
     path('new_specimen/', NewSpecimenView.as_view(), name='new_specimen'),
@@ -28,13 +28,14 @@ urlpatterns = [
     # Creates a new expedition
     path('new_expedition/', NewExpeditionView.as_view(), name='new_expedition'),
 
-    # API views
+    # API views #
+    # SPECIMENS
     path('api/specimens/', views.SpecimenListAPIView.as_view(), name='specimen-list'),
     path('api/specimens/<int:pk>/', views.SpecimenDetailAPIView.as_view(), name='specimen-detail'),
-
+    # EXPEDITION
     path('api/expeditions/', views.ExpeditionListAPIView.as_view(), name='expedition-list'),
     path('api/expeditions/<int:pk>/', views.ExpeditionDetailAPIView.as_view(), name='expedition-detail'),
-
+    # TAXONOMIES
     path('api/taxonomies/', views.TaxonomyListAPIView.as_view(), name='taxonomy-list'),
     path('api/taxonomies/<int:pk>/', views.TaxonomyDetailAPIView.as_view(), name='taxonomy-detail'),
 ]

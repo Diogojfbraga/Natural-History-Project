@@ -1,4 +1,3 @@
-# serializers.py
 from rest_framework import serializers
 from .models import Expedition, Taxonomy, Specimen
 
@@ -19,3 +18,6 @@ class SpecimenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Specimen
         fields = '__all__'
+
+
+        
