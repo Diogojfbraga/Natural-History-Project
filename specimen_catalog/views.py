@@ -21,50 +21,44 @@ class AllSpecimensView(ListView):
     template_name = 'specimen_catalog/all_specimens.html'
     context_object_name = 'specimens'
     queryset = Specimen.objects.all()
-    filterset_class = SpecimenFilter 
+    filterset_class = SpecimenFilter  # Import your SpecimenFilter class
 
     def get_context_data(self, **kwargs):
-        # Calls the parent class method to get the default context data
         context = super().get_context_data(**kwargs)
         
-        # Error Handling
         filter = None
         try:
-            # Attempts to create a SpecimenFilter instance with user-provided filter parameters
             filter = SpecimenFilter(self.request.GET, queryset=self.get_queryset())
         except ValidationError as e:
-            # Handles ValidationError by displaying an error message to the user
             messages.error(self.request, f"Invalid filter parameters: {e}")
-            # Create a SpecimenFilter instance with an empty queryset to prevent further errors
             filter = SpecimenFilter(queryset=Specimen.objects.none())
 
-        # Paginates the specimens queryset with 20 specimens per page 
         paginator = Paginator(filter.qs, 20)
         page = self.request.GET.get('page', 1)
 
-        # Error Handling
         try:
-            # Gets the specimens for the current page
             specimens = paginator.page(page)
         except EmptyPage:
-            # If the requested page is out of range, deliver the last page
             specimens = paginator.page(paginator.num_pages)
         
-        # Adds the paginated specimens, page object, and filter to the context
         context['specimens'] = specimens
         context['page_obj'] = specimens
         context['filter'] = filter
 
-        # Adds successfully when views is rendered
         messages.success(self.request, "View rendered successfully!")
 
         return context
 
     def get_queryset(self):
-        # Gets the default queryset for the Specimen model
         queryset = super().get_queryset()
-        return queryset.order_by('-specimen_id')
+        
+        filter_params = {
+            'expedition__continent__icontains': self.request.GET.get('expedition__continent', ''),
+            'expedition__country__icontains': self.request.GET.get('expedition__country', ''),
+            'expedition__state_province__icontains': self.request.GET.get('expedition__state_province', ''),
+        }
 
+        return queryset.filter(**filter_params).order_by('-specimen_id')
 
 # Displays a single speciment with its details, taxonomy and expedtion
 class SpecimenDetailView(DetailView):

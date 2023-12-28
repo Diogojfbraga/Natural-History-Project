@@ -1,0 +1,89 @@
+<form method="get" action="/all_specimens/" id="filterForm">
+    <h2>Taxonomy</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="id_taxonomy__kingdom">Kingdom:</label>
+                <input type="text" name="taxonomy__kingdom" id="id_taxonomy__kingdom" class="form-control" value="{{ request.GET.taxonomy__kingdom }}">
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="id_taxonomy__phylum">Phylum:</label>
+                <input type="text" name="taxonomy__phylum" id="id_taxonomy__phylum" class="form-control" value="{{ request.GET.taxonomy__phylum }}">
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="id_taxonomy__highest_biostratigraphic_zone">Sub-Phylum:</label>
+                <input type="text" name="taxonomy__highest_biostratigraphic_zone" id="id_taxonomy__highest_biostratigraphic_zone" class="form-control" value="{{ request.GET.taxonomy__highest_biostratigraphic_zone }}">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="id_taxonomy__class_name">Class:</label>
+                <input type="text" name="taxonomy__class_name" id="id_taxonomy__class_name" class="form-control" value="{{ request.GET.taxonomy__class_name }}">
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="id_taxonomy__family">Family:</label>
+                <input type="text" name="taxonomy__family" id="id_taxonomy__family" class="form-control" value="{{ request.GET.taxonomy__family }}">
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="id_taxonomy__genus">Genus:</label>
+                <input type="text" name="taxonomy__genus" id="id_taxonomy__genus" class="form-control" value="{{ request.GET.taxonomy__genus }}">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="id_taxonomy__species">Species:</label>
+                <input type="text" name="taxonomy__species" id="id_taxonomy__species" class="form-control">
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <h2>Expedition</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="id_expedition__continent">Continent:</label>
+                <input type="text" name="expedition__continent" id="id_expedition__continent" class="form-control" value="{{ request.GET.expedition__continent }}">
+            </div>
+        </div>
+    
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="id_expedition__country">Country:</label>
+                <input type="text" name="expedition__country" id="id_expedition__country" class="form-control" value="{{ request.GET.expedition__country }}">
+            </div>
+        </div>
+    
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="id_expedition__state_province">State/Province:</label>
+                <input type="text" name="expedition__state_province" id="id_expedition__state_province" class="form-control" value="{{ request.GET.expedition__state_province }}">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <button type="button" class="btn btn-secondary" onclick="resetFilters()">Reset Filters</button>
+    </div>
+</form>
+
+

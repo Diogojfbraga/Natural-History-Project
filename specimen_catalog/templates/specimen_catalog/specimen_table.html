@@ -1,0 +1,109 @@
+<table class="table table-bordered">
+    <thead class="thead-light">
+        <tr>
+            <th class="table-success text-white">Specimen</th>
+            <th class="table-success text-white">Kingdom</th>
+            <th class="table-success text-white">Phylum</th>
+            <th class="table-success text-white">Sub-phylum</th>
+            <th class="table-success text-white">Class</th>
+            <th class="table-success text-white">Order</th>
+            <th class="table-success text-white">Family</th>
+            <th class="table-success text-white">Genus</th>
+            <th class="table-success text-white">Species</th>
+            <th class="table-success text-white">Continent</th>
+            <th class="table-success text-white">Country</th>
+            <th class="table-success text-white">State</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for specimen in specimens %}
+            <tr>
+                <td>
+                    {% if specimen.taxonomy %}
+                        <a href="{% url 'specimen_detail' pk=specimen.pk %}">{{ specimen }}</a>
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if specimen.taxonomy %}
+                        {{ specimen.taxonomy.kingdom }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if specimen.taxonomy %}
+                        {{ specimen.taxonomy.phylum }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if specimen.taxonomy %}
+                        {{ specimen.taxonomy.highest_biostratigraphic_zone }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if specimen.taxonomy %}
+                        {{ specimen.taxonomy.class_name }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if specimen.taxonomy %}
+                        {{ specimen.taxonomy.identification_description }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if specimen.taxonomy %}
+                        {{ specimen.taxonomy.family }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if specimen.taxonomy %}
+                        {{ specimen.taxonomy.genus }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if specimen.taxonomy %}
+                        {{ specimen.taxonomy.species }}</a>
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if specimen.expedition %}
+                        {{ specimen.expedition.continent }}</a>
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if specimen.expedition %}
+                        {{ specimen.expedition.country }}</a>
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+                <td>
+                    {% if specimen.expedition %}
+                        {{ specimen.expedition.state_province }}</a>
+                    {% else %}
+                        Unknown
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

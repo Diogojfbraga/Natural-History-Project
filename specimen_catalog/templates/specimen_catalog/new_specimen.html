@@ -1,5 +1,5 @@
 <!-- new_specimen.html -->
-{% extends 'specimen_catalog/master.html' %}
+{% extends 'specimen_catalog/base.html' %}
 
 {% block title %}New Specimen{% endblock %}
 
@@ -30,9 +30,9 @@
             {{ form.as_p }}
         </div>
         <div>
-            <button type="submit" class="btn btn-primary custom-btn">Create New Specimen</button>
-            <a href="{% url 'new_taxonomy' %}" class="btn btn-primary custom-btn">Create New Taxonomy</a>
-            <a href="{% url 'new_expedition' %}" class="btn btn-primary custom-btn">Create New Expedition</a>
+            <button type="submit" class="btn btn-primary">Create New Specimen</button>
+            <a href="{% url 'new_taxonomy' %}" class="btn btn-primary">Create New Taxonomy</a>
+            <a href="{% url 'new_expedition' %}" class="btn btn-primary">Create New Expedition</a>
         </div>
     </form>
 {% endblock %}
