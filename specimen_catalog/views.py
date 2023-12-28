@@ -11,6 +11,8 @@ from .models import Specimen, Expedition, Taxonomy      # Models
 from .forms import SpecimenForm, ExpeditionForm, TaxonomyForm, NewSpecimenForm  # Forms
 from .filters import SpecimenFilter     # Filters
 from django.http import Http404, HttpResponseServerError, HttpResponseRedirect, JsonResponse
+from .serializers import SpecimenSerializer, ExpeditionSerializer, TaxonomySerializer
+from rest_framework import generics
 
 # Index page view
 def index(request):
@@ -281,3 +283,28 @@ class NewExpeditionView(View):
 
         # Render the page with the form and error messages
         return render(request, self.template_name, {'expedition_form': expedition_form})
+    
+
+class SpecimenListAPIView(generics.ListCreateAPIView):
+    queryset = Specimen.objects.all()
+    serializer_class = SpecimenSerializer
+
+class SpecimenDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Specimen.objects.all()
+    serializer_class = SpecimenSerializer
+
+class ExpeditionListAPIView(generics.ListCreateAPIView):
+    queryset = Expedition.objects.all()
+    serializer_class = ExpeditionSerializer
+
+class ExpeditionDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Expedition.objects.all()
+    serializer_class = ExpeditionSerializer
+
+class TaxonomyListAPIView(generics.ListCreateAPIView):
+    queryset = Taxonomy.objects.all()
+    serializer_class = TaxonomySerializer
+
+class TaxonomyDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Taxonomy.objects.all()
+    serializer_class = TaxonomySerializer

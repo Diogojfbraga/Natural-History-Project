@@ -2,7 +2,8 @@
 from django.urls import path, include
 from . import views
 from .views import (AllSpecimensView, SpecimenDetailView, ExpeditionUpdateView, TaxonomyUpdateView, 
-                    SpecimenDeleteView, NewSpecimenView, NewTaxonomyView, NewExpeditionView)
+                    SpecimenDeleteView, NewSpecimenView, NewTaxonomyView, NewExpeditionView,
+                    )
 
 # URL patterns defines routes for specimen_catalog app
 urlpatterns = [
@@ -26,4 +27,14 @@ urlpatterns = [
     path('new_taxonomy/', NewTaxonomyView.as_view(), name='new_taxonomy'),
     # Creates a new expedition
     path('new_expedition/', NewExpeditionView.as_view(), name='new_expedition'),
+
+    # API views
+    path('api/specimens/', views.SpecimenListAPIView.as_view(), name='specimen-list'),
+    path('api/specimens/<int:pk>/', views.SpecimenDetailAPIView.as_view(), name='specimen-detail'),
+
+    path('api/expeditions/', views.ExpeditionListAPIView.as_view(), name='expedition-list'),
+    path('api/expeditions/<int:pk>/', views.ExpeditionDetailAPIView.as_view(), name='expedition-detail'),
+
+    path('api/taxonomies/', views.TaxonomyListAPIView.as_view(), name='taxonomy-list'),
+    path('api/taxonomies/<int:pk>/', views.TaxonomyDetailAPIView.as_view(), name='taxonomy-detail'),
 ]

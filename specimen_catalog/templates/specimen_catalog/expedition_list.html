@@ -1,0 +1,18 @@
+<!-- yourapp/templates/yourapp/expedition_list.html -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>All Expeditions</h2>
+  <ul>
+    {% for expedition in expeditions %}
+      <li>
+        Expedition ID: {{ expedition.expedition_id }}<br>
+        Expedition Name: {{ expedition.expedition }}<br>
+        Continent: {{ expedition.continent }}<br>
+        Country: {{ expedition.country }}<br>
+        State/Province: {{ expedition.state_province }}<br>
+        Term: {{ expedition.term }}<br>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -9,6 +9,13 @@ from .filters import SpecimenFilter
 from .views import AllSpecimensView
 from .forms import TaxonomyForm, NewSpecimenForm, SpecimenForm 
 
+from django.test import TestCase
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APIClient
+from .models import Specimen, Expedition
+from .serializers import SpecimenSerializer, ExpeditionSerializer
+
 class IndexViewTests(TestCase):
     def test_index_view_uses_correct_template(self):
         response = self.client.get(reverse('index'))
@@ -252,3 +259,72 @@ class NewExpeditionViewTests(TestCase):
 
         # Check if the new expedition is created in the database
         self.assertTrue(Expedition.objects.filter(expedition='Test Expedition').exists())
+
+
+# test_views.py
+
+# ... (other imports and code)
+
+class SpecimenAPIViewTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.specimen_url = reverse('specimen-list')
+
+        # Create some test data
+        self.expedition = Expedition.objects.create(
+            expedition='Test Expedition',
+            continent='Test Continent',
+            country='Test Country',
+            state_province='Test State',
+            term='Test Term'
+        )
+        self.specimen_data = {
+            'catalog_number': 'Test Catalog Number',
+            'created': 20230101,
+            'expedition': self.expedition.pk  # Use 'pk' instead of 'id'
+        }
+
+    def test_create_specimen(self):
+        response = self.client.post(self.specimen_url, self.specimen_data, format='json')
+        print(response.content)  # Add this line to print the response content
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Specimen.objects.count(), 1)
+        self.assertEqual(Specimen.objects.get().catalog_number, 'Test Catalog Number')
+
+
+    def test_get_specimen_detail(self):
+        specimen = Specimen.objects.create(catalog_number='Detail Test', created=20230101, expedition=self.expedition)
+        response = self.client.get(reverse('specimen-detail', args=[specimen.pk]))  # Use 'pk' instead of 'id'
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['catalog_number'], 'Detail Test')
+
+    # ... (other tests)
+
+class ExpeditionAPIViewTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.expedition_url = reverse('expedition-list')
+
+        # Create some test data
+        self.expedition_data = {
+            'expedition': 'Test Expedition',
+            'continent': 'Test Continent',
+            'country': 'Test Country',
+            'state_province': 'Test State',
+            'term': 'Test Term'
+        }
+
+    def test_create_expedition(self):
+        response = self.client.post(self.expedition_url, self.expedition_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Expedition.objects.count(), 1)
+        self.assertEqual(Expedition.objects.get().expedition, 'Test Expedition')
+
+    def test_get_expedition_detail(self):
+        expedition = Expedition.objects.create(expedition='Detail Test', continent='Test Continent', country='Test Country',
+                                               state_province='Test State', term='Test Term')
+        response = self.client.get(reverse('expedition-detail', args=[expedition.pk]))  # Use 'pk' instead of 'id'
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['expedition'], 'Detail Test')
+
+    # ... (other tests)
