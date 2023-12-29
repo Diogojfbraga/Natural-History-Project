@@ -1,12 +1,12 @@
-<!-- specimen_catalog/templates/specimen_catalog/new_expedition.html -->
-{% extends 'specimen_catalog/master.html' %}
+<!-- new_expedition.html page -->
+{% extends 'specimen_catalog/base.html' %}
 
 {% block title %}New Expedition{% endblock %}
 
 {% block content %}
     <h1>New Expedition</h1>
 
-    <form method="post" action="{% url 'new_expedition' %}">
+    <form method="post" class="form-control" action="{% url 'new_expedition' %}">
         {% csrf_token %}
         {{ expedition_form.as_p }}
 

@@ -1,0 +1,10 @@
+<!-- specimen_deleted.html page -->
+{% extends 'specimen_catalog/base.html' %}
+
+{% block title %}Specimen Deleted{% endblock %}
+
+{% block content %}
+    <h1>Specimen Deleted</h1>
+    <p>The specimen has been deleted successfully.</p>
+    <p><a href="{% url 'all_specimens' %}">Return to All Specimens</a></p>
+{% endblock %}

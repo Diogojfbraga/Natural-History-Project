@@ -1,12 +1,12 @@
-<!-- specimen_catalog/templates/specimen_catalog/new_taxonomy.html -->
-{% extends 'specimen_catalog/master.html' %}
+<!-- new_taxonomy.html page-->
+{% extends 'specimen_catalog/base.html' %}
 
 {% block title %}New Taxonomy{% endblock %}
 
 {% block content %}
     <h1>New Taxonomy</h1>
 
-    <form method="post" action="{% url 'new_taxonomy' %}">
+    <form method="post" class="form-control" action="{% url 'new_taxonomy' %}">
         {% csrf_token %}
         {{ taxonomy_form.as_p }}
 

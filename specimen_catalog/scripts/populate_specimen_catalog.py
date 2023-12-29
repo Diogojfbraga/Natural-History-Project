@@ -36,7 +36,7 @@ with open(data_file, 'r') as csv_file:
         expedition, created = Expedition.objects.get_or_create(
             expedition = row['expedition'],
             continent = row['continent'],
-            country = row['continent'],    
+            country = row['country'],    
             state_province = row['stateProvince'],
             term = row['year'],             
         )

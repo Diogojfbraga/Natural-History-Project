@@ -1,216 +1,38 @@
-{% extends 'specimen_catalog/master.html' %}
+{% extends 'specimen_catalog/base.html' %}
 
 {% block title %}All Specimens{% endblock %}
 
 {% block content %}
     <h1>All Specimens</h1>
 
-    <form method="get" action="/all_specimens/" id="filterForm">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="id_taxonomy__kingdom">Kingdom:</label>
-                    <input type="text" name="taxonomy__kingdom" id="id_taxonomy__kingdom" class="form-control" value="{{ request.GET.taxonomy__kingdom }}">
-                </div>
-            </div>
-    
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="id_taxonomy__phylum">Phylum:</label>
-                    <input type="text" name="taxonomy__phylum" id="id_taxonomy__phylum" class="form-control" value="{{ request.GET.taxonomy__phylum }}">
-                </div>
-            </div>
-    
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="id_taxonomy__highest_biostratigraphic_zone">Sub-Phylum:</label>
-                    <input type="text" name="taxonomy__highest_biostratigraphic_zone" id="id_taxonomy__highest_biostratigraphic_zone" class="form-control" value="{{ request.GET.taxonomy__highest_biostratigraphic_zone }}">
-                </div>
-            </div>
-        </div>
-    
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="id_taxonomy__class_name">Class:</label>
-                    <input type="text" name="taxonomy__class_name" id="id_taxonomy__class_name" class="form-control" value="{{ request.GET.taxonomy__class_name }}">
-                </div>
-            </div>
-    
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="id_taxonomy__family">Family:</label>
-                    <input type="text" name="taxonomy__family" id="id_taxonomy__family" class="form-control" value="{{ request.GET.taxonomy__family }}">
-                </div>
-            </div>
-    
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="id_taxonomy__genus">Genus:</label>
-                    <input type="text" name="taxonomy__genus" id="id_taxonomy__genus" class="form-control" value="{{ request.GET.taxonomy__genus }}">
-                </div>
-            </div>
-        </div>
-    
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="id_taxonomy__species">Species:</label>
-                    <input type="text" name="taxonomy__species" id="id_taxonomy__species" class="form-control">
-                </div>
-            </div>
-        </div>
-    
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Filter</button>
-            <button type="button" class="btn btn-secondary" onclick="resetFilters()">Reset Filters</button>
-        </div>
-    </form>
-    
-     <!-- Display the number of results -->
-     <p>Number of Results: {{ specimens.paginator.count }}</p>
+    <!-- Includes the filter form -->
+    {% include 'specimen_catalog/filters.html' %}
+
+    <!-- Displays the number of results -->
+    <p>Number of Results: {{ specimens.paginator.count }}</p>
 
     <div class="container mt-5">
         <div class="container mt-3">
-            <!-- Pagination controls -->
-            <div class="pagination">
-                <span class="step-links">
-                    {% if specimens.has_previous %}
-                        <a href="?page=1">&laquo; first</a>
-                        <a href="?page={{ specimens.previous_page_number }}">previous</a>
-                    {% endif %}
-    
-                    <span class="current">
-                        Page {{ specimens.number }} of {{ specimens.paginator.num_pages }}
-                    </span>
-    
-                    {% if specimens.has_next %}
-                        <a href="?page={{ specimens.next_page_number }}">next</a>
-                        <a href="?page={{ specimens.paginator.num_pages }}">last &raquo;</a>
-                    {% endif %}
-                </span>
-            </div>
-        </div>
-        <table class="table table-bordered">
-            <thead class="thead-light">
-                <tr>
-                    <th class="table-success text-white">Specimen</th>
-                    <th class="table-success text-white">Kingdom</th>
-                    <th class="table-success text-white">Phylum</th>
-                    <th class="table-success text-white">Sub-phylum</th>
-                    <th class="table-success text-white">Class</th>
-                    <th class="table-success text-white">Order</th>
-                    <th class="table-success text-white">Family</th>
-                    <th class="table-success text-white">Genus</th>
-                    <th class="table-success text-white">Species</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for specimen in specimens %}
-                    <tr>
-                        <td>
-                            {% if specimen.taxonomy %}
-                                <a href="{% url 'specimen_detail' pk=specimen.pk %}">{{ specimen }}</a>
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if specimen.taxonomy %}
-                                {{ specimen.taxonomy.kingdom }}
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if specimen.taxonomy %}
-                                {{ specimen.taxonomy.phylum }}
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if specimen.taxonomy %}
-                                {{ specimen.taxonomy.highest_biostratigraphic_zone }}
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if specimen.taxonomy %}
-                                {{ specimen.taxonomy.class_name }}
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if specimen.taxonomy %}
-                                {{ specimen.taxonomy.identification_description }}
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if specimen.taxonomy %}
-                                {{ specimen.taxonomy.family }}
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if specimen.taxonomy %}
-                                {{ specimen.taxonomy.genus }}
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if specimen.taxonomy %}
-                                {{ specimen.taxonomy.species }}</a>
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+            <h2>SPECIMENS TABLE</h2>          
+            <!-- Includes the specimen table -->
+            {% include 'specimen_catalog/specimen_table.html' %}
 
-
-    <div class="container mt-3">
-        <!-- Pagination controls -->
-        <div class="pagination">
-            <span class="step-links">
-                {% if specimens.has_previous %}
-                    <a href="?page=1">&laquo; first</a>
-                    <a href="?page={{ specimens.previous_page_number }}">previous</a>
-                {% endif %}
-
-                <span class="current">
-                    Page {{ specimens.number }} of {{ specimens.paginator.num_pages }}
-                </span>
-
-                {% if specimens.has_next %}
-                    <a href="?page={{ specimens.next_page_number }}">next</a>
-                    <a href="?page={{ specimens.paginator.num_pages }}">last &raquo;</a>
-                {% endif %}
-            </span>
+            <!-- Includes the pagination controls -->
+            {% include 'specimen_catalog/pagination.html' %}
         </div>
     </div>
 
     <script>
         function resetFilters() {
-            // Reset filter values to empty string
+            // Resets filter values to empty string
             var form = document.getElementById('filterForm');
             var filterFields = form.querySelectorAll('[name^="taxonomy"]');
             filterFields.forEach(function (field) {
                 field.value = '';
             });
 
-            // Trigger a form submission
+            // Triggers a form submission
             form.submit();
         }
     </script>
-    
 {% endblock %}

@@ -1,0 +1,9 @@
+<!-- specimen_list.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>All Specimens</h2>
+  {% for specimen in specimens %}
+    <p>{{ specimen.catalog_number }} - {{ specimen.expedition.expedition }}</p>
+  {% endfor %}
+{% endblock %}

@@ -1,7 +1,7 @@
-# specimen_catalog/filters.py
 import django_filters
 from .models import Specimen
 
+# Filter specimens table by the following
 class SpecimenFilter(django_filters.FilterSet):
     taxonomy__kingdom = django_filters.CharFilter(label="Kingdom", lookup_expr="icontains")
     taxonomy__phylum = django_filters.CharFilter(label="Phylum", lookup_expr="icontains")
@@ -13,4 +13,11 @@ class SpecimenFilter(django_filters.FilterSet):
 
     class Meta:
         model = Specimen
-        fields = ['taxonomy__kingdom', 'taxonomy__phylum', 'taxonomy__highest_biostratigraphic_zone', 'taxonomy__class_name', 'taxonomy__family', 'taxonomy__genus', 'taxonomy__species']
+        fields = ['taxonomy__kingdom', 
+                  'taxonomy__phylum', 
+                  'taxonomy__highest_biostratigraphic_zone', 
+                  'taxonomy__class_name', 
+                  'taxonomy__family', 
+                  'taxonomy__genus', 
+                  'taxonomy__species'
+                  ]
