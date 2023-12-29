@@ -6,8 +6,6 @@ class Expedition(models.Model):
     expedition = models.CharField(max_length=100, null=False, blank=True)
     continent = models.CharField(max_length=50, null=False, blank=True)
     country = models.CharField(max_length=50, null=False, blank=True)
-    state_province = models.CharField(max_length=50, null=False, blank=True)
-    term = models.CharField(max_length=100, null=False, blank=True)
 
     def __str__(self):
         return self.expedition

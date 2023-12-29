@@ -53,14 +53,12 @@ class SpecimenForm(forms.ModelForm):
 class ExpeditionForm(forms.ModelForm):
     class Meta:
         model = Expedition
-        fields = ['expedition', 'continent', 'country', 'state_province', 'term']
+        fields = ['expedition', 'continent', 'country']
 
         labels = {
             'expedition': 'Expedition', 
             'continent': 'Continent', 
             'country': 'Country', 
-            'state_province': 'State', 
-            'term': 'Term',
         }
 
     def clean_expedition(self):
@@ -90,22 +88,6 @@ class ExpeditionForm(forms.ModelForm):
             raise ValidationError('Invalid country entered.')
 
         return country
-
-    def clean_state_province(self):
-        state_province = self.cleaned_data['state_province']
-        # Example: Ensures state_province is not empty
-        if not state_province:
-            raise ValidationError('State/Province cannot be empty.')
-
-        return state_province
-
-    def clean_term(self):
-        term = self.cleaned_data['term']
-        # Example: Ensures term is not empty
-        if not term:
-            raise ValidationError('Term cannot be empty.')
-
-        return term
 
 # Form for Taxonomy model, includes various taxonomy-related fields
 class TaxonomyForm(forms.ModelForm):

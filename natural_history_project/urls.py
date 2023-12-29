@@ -19,10 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # I wrote this code #
-
     # Any URL will that matches the root will be directed to the URL pattern in the specimen_catalog.urls
     path('', include('specimen_catalog.urls')), 
     
-    # End of the code I wrote #
 ]

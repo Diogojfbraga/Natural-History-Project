@@ -310,8 +310,6 @@ class ExpeditionAPIViewTests(TestCase):
             'expedition': 'Test Expedition',
             'continent': 'Test Continent',
             'country': 'Test Country',
-            'state_province': 'Test State',
-            'term': 'Test Term'
         }
 
     def test_create_expedition(self):

@@ -57,7 +57,6 @@ class AllSpecimensView(ListView):
         filter_params = {
             'expedition__continent__icontains': self.request.GET.get('expedition__continent', ''),
             'expedition__country__icontains': self.request.GET.get('expedition__country', ''),
-            'expedition__state_province__icontains': self.request.GET.get('expedition__state_province', ''),
         }
 
         return queryset.filter(**filter_params).order_by('-specimen_id')
@@ -284,7 +283,7 @@ class NewExpeditionView(View):
         # Render the page with the form and error messages
         return render(request, self.template_name, {'expedition_form': expedition_form})
     
-
+# Serializers API views
 class SpecimenListAPIView(generics.ListCreateAPIView):
     queryset = Specimen.objects.all()
     serializer_class = SpecimenSerializer
