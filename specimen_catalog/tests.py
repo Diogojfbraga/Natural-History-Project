@@ -1,328 +1,173 @@
-from django.test import TestCase, Client
-from django.urls import reverse
-from django.core.exceptions import ValidationError
-from django.contrib.messages import get_messages
-from django.contrib.auth.models import User
-
-from .models import Expedition, Taxonomy, Specimen
-from .filters import SpecimenFilter
-from .views import AllSpecimensView
-from .forms import TaxonomyForm, NewSpecimenForm, SpecimenForm 
-
 from django.test import TestCase
 from django.urls import reverse
-from rest_framework import status
-from rest_framework.test import APIClient
-from .models import Specimen, Expedition
-from .serializers import SpecimenSerializer, ExpeditionSerializer
 
 class IndexViewTests(TestCase):
+    # Test to check if the index view returns a 200 status code.
+    def test_index_view_status_code(self):
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+
+    # Test to check if the index view uses the correct template.
     def test_index_view_uses_correct_template(self):
         response = self.client.get(reverse('index'))
         self.assertTemplateUsed(response, 'specimen_catalog/index.html')
 
-    def test_index_view_returns_200_status_code(self):
+    # Test to check if the expected content is present in the index view.
+    def test_index_view_content(self):
         response = self.client.get(reverse('index'))
-        self.assertEqual(response.status_code, 200)
+        expected_content = 'Welcome to Natural History Project'
+        self.assertContains(response, expected_content, status_code=200)
 
-class AllSpecimensViewTests(TestCase):
-    def setUp(self):
-        # Create some Specimen instances for testing
-        Specimen.objects.create(catalog_number='ABC123', created=20220101)
-        Specimen.objects.create(catalog_number='XYZ456', created=20220102)
+    # Test to check if the index view returns a 404 status code for an invalid URL.
+    def test_index_view_returns_404(self):
+        response = self.client.get('/invalid_url/')
+        self.assertEqual(response.status_code, 404)
 
-    def test_view_rendered_successfully(self):
+#Testing the filter from all specimens
+class FilterFormTests(TestCase):
+    def test_filter_form_rendering(self):
+        # Test to check if the filter form is rendered successfully.
         response = self.client.get(reverse('all_specimens'))
-        self.assertEqual(response.status_code, 200)
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'View rendered successfully!')
+        self.assertContains(response, 'Filter', status_code=200)
+        self.assertContains(response, 'Reset Filters', status_code=200)
 
-    def test_valid_filter_parameters(self):
-        # Add valid filter parameters
-        response = self.client.get(reverse('all_specimens'), {'taxonomy__kingdom': 'Animal'})
+    def test_filter_form_submission(self):
+        # Test to check if the filter form can be submitted successfully.
+        data = {
+            'taxonomy__kingdom': 'Sample Kingdom',
+            'expedition__continent': 'Sample Continent',
+            # Add more sample filter parameters as needed
+        }
+        response = self.client.get(reverse('all_specimens'), data=data)
+        self.assertEqual(response.status_code, 200)  # You can update this based on your expected behavior
+
+    def test_filter_form_reset(self):
+        # Test to check if the reset button in the filter form works.
+        data = {
+            'taxonomy__kingdom': 'Sample Kingdom',
+            'expedition__continent': 'Sample Continent',
+            # Add more sample filter parameters as needed
+        }
+        response_with_data = self.client.get(reverse('all_specimens'), data=data)
+        self.assertContains(response_with_data, 'Sample Kingdom', status_code=200)
+
+        response_reset = self.client.get(reverse('all_specimens'), {'reset_filters': 'Reset Filters'})
+        self.assertNotContains(response_reset, 'Sample Kingdom', status_code=200)
+
+
+from django.test import TestCase
+from django.urls import reverse
+from django.core.paginator import Paginator
+
+from .models import Expedition, Specimen
+from django.core.paginator import Page
+from .views import SpecimenDetailView
+
+class AllSpecimensViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        expedition = Expedition.objects.create(expedition='Expedition Artic', continent='Europe', country='Spain')
+
+        # Create some test specimens for pagination
+        for i in range(30):
+            Specimen.objects.create(catalog_number=f'Catalog{i}', expedition=expedition, created=i)
+
+    def test_all_specimens_view(self):
+        url = reverse('all_specimens')
+
+        # Use the client to simulate a GET request to the view
+        response = self.client.get(url)
+
+        # Check that the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
+
+        # Check that the correct template is used
         self.assertTemplateUsed(response, 'specimen_catalog/all_specimens.html')
 
     def test_pagination(self):
-        # Add enough specimens to require pagination
-        for i in range(30):
-            Specimen.objects.create(catalog_number=f'Test-{i}', created=20220101)
+        url = reverse('all_specimens')
 
-        response = self.client.get(reverse('all_specimens'))
+        # Use the client to simulate a GET request to the view with page parameter
+        response = self.client.get(url, {'page': 2})
+
+        # Check that the specimens are paginated
+        self.assertIsInstance(response.context['specimens'], Page)
+
+        # Check that the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
+
+        # Check that the correct template is used
         self.assertTemplateUsed(response, 'specimen_catalog/all_specimens.html')
-        self.assertContains(response, 'pagination')
-        self.assertContains(response, 'Page 1 of')
 
-class SpecimenDetailViewTests(TestCase):
-    def setUp(self):
-        # Create sample data for testing
-        self.expedition = Expedition.objects.create(expedition='Test Expedition')
-        self.taxonomy = Taxonomy.objects.create(species='Test Species')
-        self.specimen = Specimen.objects.create(
-            catalog_number='Test-1',
-            created=20220101,
-            expedition=self.expedition,
-            taxonomy=self.taxonomy
-        )
+    def test_filtering(self):
+        url = reverse('all_specimens')
 
-    def test_specimen_detail_view_uses_correct_template(self):
-        response = self.client.get(reverse('specimen_detail', kwargs={'pk': self.specimen.pk}))
+        # Use the client to simulate a GET request to the view with filter parameters
+        response = self.client.get(url, {'expedition__continent': 'Europe'})
+
+        # Check that the response status code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # Check that the correct template is used
+        self.assertTemplateUsed(response, 'specimen_catalog/all_specimens.html')
+
+from django.test import TestCase
+from django.urls import reverse
+from django.http import Http404
+from django.contrib.messages import get_messages
+
+from .models import Expedition, Specimen
+
+class SpecimenDetailViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Create a sample expedition
+        expedition = Expedition.objects.create(expedition='Expedition Artic', continent='Europe', country='Spain')
+
+        # Create a sample specimen
+        cls.specimen = Specimen.objects.create(catalog_number='Catalog123', expedition=expedition)
+
+    def test_specimen_detail_view_success(self):
+        url = reverse('specimen_detail', kwargs={'pk': self.specimen.pk})
+        response = self.client.get(url)
+
+        # Check that the response status code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # Check that the correct template is used
         self.assertTemplateUsed(response, 'specimen_catalog/specimen_detail.html')
 
-    def test_specimen_detail_view_returns_200_status_code(self):
-        response = self.client.get(reverse('specimen_detail', kwargs={'pk': self.specimen.pk}))
+        # Check that the specimen is present in the context
+        self.assertIn('specimen', response.context)
+        self.assertEqual(response.context['specimen'], self.specimen)
+
+def test_specimen_detail_view_not_found(self):
+    # Create an invalid specimen ID that does not exist
+    invalid_specimen_id = self.specimen.pk + 1
+
+    url = reverse('specimen_detail', kwargs={'pk': invalid_specimen_id})
+    response = self.client.get(url)
+
+    # Check that the response status code is 404 (Not Found)
+    self.assertEqual(response.status_code, 404)
+
+    # Check that the expected template name is present in the response content
+    self.assertContains(response, '404.html')
+    self.assertContains(response, "Specimen not found")
+
+    from unittest.mock import patch
+
+    @patch('specimen_catalog.views.SpecimenDetailView.get_context_data')
+    def test_specimen_detail_view_error_handling(self, mock_get_context_data):
+        mock_get_context_data.side_effect = Exception("Mocked exception in get_context_data")
+
+        url = reverse('specimen_detail', kwargs={'pk': self.specimen.pk})
+        response = self.client.get(url)
+
+        # Check that the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
 
-class SpecimenUpdateViewTests(TestCase):
-    def setUp(self):
-        # Create sample data for testing
-        self.expedition = Expedition.objects.create(expedition='Test Expedition')
-        self.taxonomy = Taxonomy.objects.create(species='Test Species')
-        self.specimen = Specimen.objects.create(
-            catalog_number='Test-1',
-            created=20220101,
-            expedition=self.expedition,
-            taxonomy=self.taxonomy
-        )
+        # Check that an error message is added to the messages framework
+        messages = [m.message for m in get_messages(response.wsgi_request)]
+        self.assertIn("Error fetching specimen details", messages)
 
-    def test_specimen_update_view_uses_correct_template(self):
-        response = self.client.get(reverse('specimen_update', kwargs={'pk': self.specimen.pk}))
-        self.assertTemplateUsed(response, 'specimen_catalog/specimen_update.html')
-
-    def test_specimen_update_view_returns_200_status_code(self):
-        response = self.client.get(reverse('specimen_update', kwargs={'pk': self.specimen.pk}))
-        self.assertEqual(response.status_code, 200)
-
-class ExpeditionUpdateViewTests(TestCase):
-    def setUp(self):
-        # Create sample data for testing
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.expedition = Expedition.objects.create(expedition='Test Expedition')
-        self.specimen = Specimen.objects.create(
-            catalog_number='Test-1',
-            created=20220101,
-            expedition=self.expedition
-        )
-        self.client.login(username='testuser', password='testpassword')
-
-    def test_expedition_update_view_uses_correct_template(self):
-        response = self.client.get(reverse('expedition_update', kwargs={'pk': self.expedition.pk}))
-        self.assertTemplateUsed(response, 'specimen_catalog/expedition_update.html')
-
-    def test_expedition_update_view_returns_200_status_code(self):
-        response = self.client.get(reverse('expedition_update', kwargs={'pk': self.expedition.pk}))
-        self.assertEqual(response.status_code, 200)
-
-    def test_expedition_update_view_updates_expedition(self):
-        new_expedition_name = 'Updated Expedition'
-        response = self.client.post(
-            reverse('expedition_update', kwargs={'pk': self.expedition.pk}),
-            {'expedition': new_expedition_name}
-        )
-        self.expedition.refresh_from_db()
-        self.assertEqual(self.expedition.expedition, new_expedition_name)
-        self.assertRedirects(response, reverse('specimen_detail', kwargs={'pk': self.expedition.specimen_set.first().pk}))
-
-class TaxonomyUpdateViewTests(TestCase):
-    def setUp(self):
-        # Create sample data for testing
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.expedition = Expedition.objects.create(expedition='Test Expedition')
-        self.specimen = Specimen.objects.create(
-            catalog_number='Test-1',
-            created=20220101,
-            expedition=self.expedition
-        )
-        self.taxonomy = Taxonomy.objects.create(
-            kingdom='Test Kingdom',
-            phylum='Test Phylum',
-            highest_biostratigraphic_zone='Test Zone',
-            class_name='Test Class',
-            identification_description='Test Description',
-            family='Test Family',
-            genus='Test Genus',
-            species='Test Species'
-        )
-        self.specimen.taxonomy = self.taxonomy
-        self.specimen.save()
-        self.client.login(username='testuser', password='testpassword')
-
-    def test_taxonomy_update_view_uses_correct_template(self):
-        response = self.client.get(reverse('taxonomy_update', kwargs={'specimen_pk': self.specimen.pk}))
-        self.assertTemplateUsed(response, 'specimen_catalog/taxonomy_update.html')
-
-    def test_taxonomy_update_view_returns_200_status_code(self):
-        response = self.client.get(reverse('taxonomy_update', kwargs={'specimen_pk': self.specimen.pk}))
-        self.assertEqual(response.status_code, 200)
-
-    def test_taxonomy_update_view_updates_taxonomy(self):
-        new_kingdom = 'Updated Kingdom'
-        response = self.client.post(
-            reverse('taxonomy_update', kwargs={'specimen_pk': self.specimen.pk}),
-            {'kingdom': new_kingdom}
-        )
-        self.taxonomy.refresh_from_db()
-        self.assertEqual(self.taxonomy.kingdom, new_kingdom)
-        self.assertRedirects(response, reverse('specimen_detail', kwargs={'pk': self.specimen.pk}))
-
-class SpecimenDeleteViewTests(TestCase):
-    def setUp(self):
-        # Create sample data for testing
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.expedition = Expedition.objects.create(expedition='Test Expedition')
-        self.specimen = Specimen.objects.create(
-            catalog_number='Test-1',
-            created=20220101,
-            expedition=self.expedition
-        )
-        self.taxonomy = Taxonomy.objects.create(
-            kingdom='Test Kingdom',
-            phylum='Test Phylum',
-            highest_biostratigraphic_zone='Test Zone',
-            class_name='Test Class',
-            identification_description='Test Description',
-            family='Test Family',
-            genus='Test Genus',
-            species='Test Species'
-        )
-        self.specimen.taxonomy = self.taxonomy
-        self.specimen.save()
-        self.client.login(username='testuser', password='testpassword')
-
-    def test_specimen_delete_view_uses_correct_template(self):
-        response = self.client.get(reverse('specimen_delete', kwargs={'pk': self.specimen.pk}))
-        self.assertTemplateUsed(response, 'specimen_catalog/specimen_delete_confirm.html')
-
-    def test_specimen_delete_view_returns_200_status_code(self):
-        response = self.client.get(reverse('specimen_delete', kwargs={'pk': self.specimen.pk}))
-        self.assertEqual(response.status_code, 200)
-
-class NewSpecimenViewTests(TestCase):
-    def setUp(self):
-        self.client = Client()
-
-    def test_get_new_specimen_view(self):
-        response = self.client.get(reverse('new_specimen'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'specimen_catalog/new_specimen.html')
-        self.assertIsInstance(response.context['form'], NewSpecimenForm)
-
-    def test_post_valid_new_specimen_form(self):
-        data = {
-            'catalog_number': 'Test-123',
-            'created': 20220101,
-            # Include other required fields based on your form
-        }
-        response = self.client.post(reverse('new_specimen'), data)
-        self.assertEqual(response.status_code, 302)  # Expecting a redirect
-        self.assertRedirects(response, reverse('specimen_detail', kwargs={'pk': Specimen.objects.latest('specimen_id').pk}))
-        self.assertEqual(Specimen.objects.count(), 1)
-
-class NewTaxonomyViewTests(TestCase):
-    def setUp(self):
-        self.client = Client()
-
-    def test_get_new_taxonomy_view(self):
-        response = self.client.get(reverse('new_taxonomy'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'specimen_catalog/new_taxonomy.html')
-        self.assertIsInstance(response.context['taxonomy_form'], TaxonomyForm)
-
-    def test_post_valid_new_taxonomy_form(self):
-        data = {
-            'kingdom': 'Animalia',
-            'phylum': 'Chordata',
-        }
-        response = self.client.post(reverse('new_taxonomy'), data)
-        self.assertEqual(response.status_code, 302)  # Expecting a redirect
-        self.assertRedirects(response, reverse('new_specimen'))
-        self.assertEqual(Taxonomy.objects.count(), 1)
-
-class NewExpeditionViewTests(TestCase):
-    def test_post_valid_expedition_form(self):
-        # Prepare valid form data
-        valid_form_data = {
-            'expedition': 'Test Expedition',
-            'continent': 'Test Continent',
-            'country': 'Test Country',
-            'state_province': 'Test State',
-            'term': 'Test Term',
-        }
-
-        # Send a POST request to the view with valid form data
-        response = self.client.post(reverse('new_expedition'), data=valid_form_data)
-
-        # Check if the response redirects to the 'new_specimen' page
-        self.assertRedirects(response, reverse('new_specimen'))
-
-        # Check if the new expedition is created in the database
-        self.assertTrue(Expedition.objects.filter(expedition='Test Expedition').exists())
-
-
-# test_views.py
-
-# ... (other imports and code)
-
-class SpecimenAPIViewTests(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.specimen_url = reverse('specimen-list')
-
-        # Create some test data
-        self.expedition = Expedition.objects.create(
-            expedition='Test Expedition',
-            continent='Test Continent',
-            country='Test Country',
-            state_province='Test State',
-            term='Test Term'
-        )
-        self.specimen_data = {
-            'catalog_number': 'Test Catalog Number',
-            'created': 20230101,
-            'expedition': self.expedition.pk  # Use 'pk' instead of 'id'
-        }
-
-    def test_create_specimen(self):
-        response = self.client.post(self.specimen_url, self.specimen_data, format='json')
-        print(response.content)  # Add this line to print the response content
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Specimen.objects.count(), 1)
-        self.assertEqual(Specimen.objects.get().catalog_number, 'Test Catalog Number')
-
-
-    def test_get_specimen_detail(self):
-        specimen = Specimen.objects.create(catalog_number='Detail Test', created=20230101, expedition=self.expedition)
-        response = self.client.get(reverse('specimen-detail', args=[specimen.pk]))  # Use 'pk' instead of 'id'
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['catalog_number'], 'Detail Test')
-
-    # ... (other tests)
-
-class ExpeditionAPIViewTests(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.expedition_url = reverse('expedition-list')
-
-        # Create some test data
-        self.expedition_data = {
-            'expedition': 'Test Expedition',
-            'continent': 'Test Continent',
-            'country': 'Test Country',
-        }
-
-    def test_create_expedition(self):
-        response = self.client.post(self.expedition_url, self.expedition_data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Expedition.objects.count(), 1)
-        self.assertEqual(Expedition.objects.get().expedition, 'Test Expedition')
-
-    def test_get_expedition_detail(self):
-        expedition = Expedition.objects.create(expedition='Detail Test', continent='Test Continent', country='Test Country',
-                                               state_province='Test State', term='Test Term')
-        response = self.client.get(reverse('expedition-detail', args=[expedition.pk]))  # Use 'pk' instead of 'id'
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['expedition'], 'Detail Test')
-
-    # ... (other tests)

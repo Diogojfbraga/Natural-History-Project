@@ -42,11 +42,9 @@
                             <td>Expedition:</td>
                             <td>
                                 {% if specimen.expedition %}
-                                    {{ specimen.expedition.expedition }}, 
-                                    {{ specimen.expedition.continent }}, 
-                                    {{ specimen.expedition.country }}, 
-                                    {{ specimen.expedition.state_province }}, 
-                                    {{ specimen.expedition.term }}
+                                   Expedition: {{ specimen.expedition.expedition }} |
+                                   Continent: {{ specimen.expedition.continent }} |
+                                    Country: {{ specimen.expedition.country }} 
                                 {% else %}
                                     N/A
                                 {% endif %}
@@ -75,10 +73,13 @@
                             <td>Taxonomy:</td>
                             <td>
                                 {% if specimen.taxonomy %}
-                                    {{ specimen.taxonomy.kingdom }}, 
-                                    {{ specimen.taxonomy.phylum }}, 
-                                    {{ specimen.taxonomy.highest_biostratigraphic_zone }}, 
-                                    {{ specimen.taxonomy.class_name }}
+                                    Kindgom: {{ specimen.taxonomy.kingdom }} | 
+                                    Phylum: {{ specimen.taxonomy.phylum }} | 
+                                    Sub-Phylum: {{ specimen.taxonomy.highest_biostratigraphic_zone }} | 
+                                    Class: {{ specimen.taxonomy.class_name }} |
+                                    Order: {{ specimen.taxonomy.identification_description }} |
+                                    Family: {{ specimen.taxonomy.family }} |
+                                    Genus: {{ specimen.taxonomy.genus }}
                                 {% else %}
                                     N/A
                                 {% endif %}

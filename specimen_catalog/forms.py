@@ -3,32 +3,33 @@ from django import forms
 from django.core.exceptions import ValidationError
 from .models import Specimen, Taxonomy, Expedition
 
-# Form for Specimen model, includes catalog_number and created fields
 class SpecimenForm(forms.ModelForm):
     class Meta:
         model = Specimen
         fields = ['catalog_number', 'created']
-
         labels = {
             'created': 'Specimen Number',
         }
 
     def clean_catalog_number(self):
         catalog_number = self.cleaned_data['catalog_number']
-        # Validates catalog number format (4 digits.2 digits.2 digits)
+        # Validates catalog number format (less than or equal to 4 digits. less than or equal to 2 digits. less than or equal to 2 digits. less than or equal to 4 digits)
         parts = catalog_number.split('.')
 
-        if len(parts) != 3:
-            raise ValidationError('Invalid catalog number format. Should be 4 Digits.2 Digits.2 Digits.')
+        if len(parts) != 4:
+            raise ValidationError('Invalid catalog number format. Should have 4 parts separated by dots.')
 
-        try:
-            first_part, second_part, third_part = map(int, parts)
-        except ValueError:
-            raise ValidationError('Invalid catalog number. Parts must be integers.')
+        # Define maximum lengths for each part
+        max_lengths = [4, 2, 2, 4]
 
-        # Validates the length of each part
-        if not (len(str(first_part)) == 4 and len(str(second_part)) == 2 and len(str(third_part)) == 2):
-            raise ValidationError('Invalid catalog number. Parts should have the correct length.')
+        for part, max_length in zip(parts, max_lengths):
+            try:
+                # Check if each part is a non-negative integer and within the specified maximum length
+                value = int(part)
+                if value < 0 or len(part) > max_length:
+                    raise ValueError
+            except ValueError:
+                raise ValidationError(f'Invalid catalog number. Parts must be non-negative integers with a maximum length of {max_length}.')
 
         return catalog_number
 
@@ -41,13 +42,15 @@ class SpecimenForm(forms.ModelForm):
         except ValueError:
             raise forms.ValidationError('Invalid value for Specimen Number. Must be an integer.')
 
+        # Exclude the current instance when checking for uniqueness
+        queryset = Specimen.objects.exclude(pk=self.instance.pk) if self.instance.pk else Specimen.objects.all()
+
         # Checks if the created value is unique in the database
-        if Specimen.objects.filter(created=created).exists():
+        if queryset.filter(created=created).exists():
             raise forms.ValidationError('Specimen with this number already exists.')
 
         return created
 
-        return created
 
 # Form for Expedition model, includes expedition, continent, country, state_province, and term fields
 class ExpeditionForm(forms.ModelForm):
@@ -61,6 +64,8 @@ class ExpeditionForm(forms.ModelForm):
             'country': 'Country', 
         }
 
+    ALLOWED_CONTINENTS = ['Africa', 'Antarctica', 'Asia', 'Europe', 'North America', 'Oceania', 'South America']
+
     def clean_expedition(self):
         expedition = self.cleaned_data['expedition']
         # Example: Validates expedition format (e.g., Expedition2023-001)
@@ -68,8 +73,6 @@ class ExpeditionForm(forms.ModelForm):
             raise ValidationError('Invalid expedition format. Should start with "Expedition".')
 
         return expedition
-       
-    ALLOWED_CONTINENTS = ['Africa', 'Antarctica', 'Asia', 'Europe', 'North America', 'Oceania', 'South America']
 
     def clean_continent(self):
         continent = self.cleaned_data['continent']
@@ -88,24 +91,6 @@ class ExpeditionForm(forms.ModelForm):
             raise ValidationError('Invalid country entered.')
 
         return country
-
-# Form for Taxonomy model, includes various taxonomy-related fields
-class TaxonomyForm(forms.ModelForm):
-    class Meta:
-        model = Taxonomy
-        fields = ['kingdom', 'phylum', 'highest_biostratigraphic_zone', 'class_name',
-                  'identification_description', 'family', 'genus', 'species']
-        
-        labels = {
-            'kingdom': 'Kindgom',
-            'phylum': 'Phylum',
-            'highest_biostratigraphic_zone': 'Sub-phylum',
-            'class_name' : 'Class',
-            'identification_description': 'Order',
-            'family': 'Family',
-            'genus': 'Genus',
-            'species': 'Species',
-        }
 
 class TaxonomyForm(forms.ModelForm):
     class Meta:

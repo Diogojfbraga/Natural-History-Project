@@ -14,6 +14,7 @@ from django.http import Http404, HttpResponseServerError, HttpResponseRedirect, 
 from .serializers import SpecimenSerializer, ExpeditionSerializer, TaxonomySerializer
 from rest_framework import generics
 
+
 # Index page view
 def index(request):
     return render(request, 'specimen_catalog/index.html')
@@ -72,9 +73,9 @@ class SpecimenDetailView(DetailView):
         try:
             # Attempts to get the object based on the provided queryset
             return super().get_object(queryset=queryset)
-        except Http404:
+        except Http404 as e:
             # Handles the case where the object is not found
-            raise Http404("Specimen not found")
+            raise e from None
 
     def get_context_data(self, **kwargs):
         # Error Handling
@@ -105,12 +106,24 @@ class SpecimenUpdateView(UpdateView):
         try:
             # Calls the superclass method to handle the form validation
             response = super().form_valid(form)
-            
             return response
         except Exception as e:
             # Handle other exceptions that may occur during form validation
             messages.error(self.request, f"Error updating specimen: {e}")
             return self.form_invalid(form)  # Redirect to the form with error messages
+
+    def get_success_url(self):
+        # Redirect to specimen_detail with the updated specimen's ID
+        return reverse_lazy('specimen_detail', kwargs={'pk': self.object.pk})
+    
+    def get(self, request, *args, **kwargs):
+            try:
+                # Attempts to get the object based on the provided queryset
+                return super().get(request, *args, **kwargs)
+            except Http404:
+                # Handles the case where the object is not found
+                messages.error(request, "Specimen not found")
+                return HttpResponseNotFound(render(request, '404.html'))
 
 # View that allows to update the expedition record
 class ExpeditionUpdateView(View):
