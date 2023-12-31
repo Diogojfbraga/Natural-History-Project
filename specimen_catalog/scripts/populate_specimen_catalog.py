@@ -58,7 +58,6 @@ def run():
                         specimen_id=row['_id'],  # Takes the CSV index column
                         defaults={
                             'catalog_number': row['catalogNumber'],
-                            'created': row['created'],
                             'expedition': expedition,
                             'taxonomy': taxonomy,
                         }

@@ -17,10 +17,6 @@
                             <td>Catalog Number:</td>
                             <td>{{ specimen.catalog_number }}</td>
                         </tr>
-                        <tr>
-                            <td>Specimen Number:</td>
-                            <td>{{ specimen.created }}</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -56,9 +52,9 @@
         </div>
     </div>
 
-    {% if specimen.expedition_id %}
+
         <a href="{% url 'expedition_update' pk=specimen.expedition_id %}" class="btn btn-warning">Update Expedition</a>
-    {% endif %}
+
 
     <div class="row">
         <!-- Column 3: Classification -->

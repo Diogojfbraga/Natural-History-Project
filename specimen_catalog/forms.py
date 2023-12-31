@@ -6,9 +6,9 @@ from .models import Specimen, Taxonomy, Expedition
 class SpecimenForm(forms.ModelForm):
     class Meta:
         model = Specimen
-        fields = ['catalog_number', 'created']
+        fields = ['catalog_number']
         labels = {
-            'created': 'Specimen Number',
+            'Catalog_number': 'Catalog Number',
         }
 
     def clean_catalog_number(self):
@@ -33,25 +33,6 @@ class SpecimenForm(forms.ModelForm):
 
         return catalog_number
 
-    def clean_created(self):
-        created = self.cleaned_data['created']
-
-        # Validates that created is an integer
-        try:
-            created = int(created)
-        except ValueError:
-            raise forms.ValidationError('Invalid value for Specimen Number. Must be an integer.')
-
-        # Exclude the current instance when checking for uniqueness
-        queryset = Specimen.objects.exclude(pk=self.instance.pk) if self.instance.pk else Specimen.objects.all()
-
-        # Checks if the created value is unique in the database
-        if queryset.filter(created=created).exists():
-            raise forms.ValidationError('Specimen with this number already exists.')
-
-        return created
-
-
 # Form for Expedition model, includes expedition, continent, country, state_province, and term fields
 class ExpeditionForm(forms.ModelForm):
     class Meta:
@@ -67,10 +48,19 @@ class ExpeditionForm(forms.ModelForm):
     ALLOWED_CONTINENTS = ['Africa', 'Antarctica', 'Asia', 'Europe', 'North America', 'Oceania', 'South America']
 
     def clean_expedition(self):
-        expedition = self.cleaned_data['expedition']
-        # Example: Validates expedition format (e.g., Expedition2023-001)
-        if not expedition.lower().startswith('expedition'):
-            raise ValidationError('Invalid expedition format. Should start with "Expedition".')
+        expedition = self.cleaned_data['expedition'].strip()
+
+        # Check if the field is not empty
+        if not expedition:
+            return expedition  # No further validation needed
+
+        # Check if "expedition" is contained anywhere in the string
+        if 'expedition' not in expedition.lower():
+            raise ValidationError('Invalid expedition format. Should contain "Expedition".')
+
+        # Validate the format if "expedition" is contained in the string
+        if not expedition.lower().startswith('expedition '):
+            raise ValidationError('Invalid expedition format. Should start with "Expedition" followed by a space and another word.')
 
         return expedition
 
@@ -141,46 +131,30 @@ class TaxonomyForm(forms.ModelForm):
 
     def clean_species(self):
         return self.clean_field_length('species', 3)
+    
 
-
-# Form for creating a new Specimen, includes catalog_number, created, expedition, and taxonomy fields
 class NewSpecimenForm(forms.ModelForm):
     class Meta:
         model = Specimen
-        fields = ['catalog_number', 'created', 'expedition', 'taxonomy']
-
+        fields = ['catalog_number', 'expedition', 'taxonomy']
         labels = {
             'catalog_number': 'Catalog Number',
-            'created': 'Specimen Creator',
             'expedition': 'Expedition',
             'taxonomy': 'Taxonomy',
         }
 
     def clean_catalog_number(self):
         catalog_number = self.cleaned_data['catalog_number']
-        # Validates catalog number format (4 digits.2 digits.2 digits)
-        parts = catalog_number.split('.')
-
-        if len(parts) != 3:
-            raise ValidationError('Invalid catalog number format. Should be 4 Digits.2 Digits.2 Digits.')
-
-        try:
-            first_part, second_part, third_part = map(int, parts)
-        except ValueError:
-            raise ValidationError('Invalid catalog number. Parts must be integers.')
-
-        # Validate the length of each part
-        if not (len(str(first_part)) == 4 and len(str(second_part)) == 2 and len(str(third_part)) == 2):
-            raise ValidationError('Invalid catalog number. Parts should have the correct length.')
-
+        # Your validation logic for catalog number here
         return catalog_number
-
-    def clean_created(self):
-        created = self.cleaned_data['created']
-        # Example: Validates that created is an integer
-        try:
-            created = int(created)
-        except ValueError:
-            raise ValidationError('Invalid value for Specimen Number. Must be an integer.')
-
-        return created
+    
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        
+        # You can set the specimen_id here before saving
+        # Ensure that the Specimen model has the `specimen_id` field set as AutoField(primary_key=True)
+        # This should automatically handle incrementing the specimen_id.
+        instance.specimen_id = Specimen.objects.latest('specimen_id').specimen_id + 1
+        if commit:
+            instance.save()
+        return instance

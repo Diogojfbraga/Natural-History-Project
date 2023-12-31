@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from .models import Specimen, Expedition, Taxonomy      # Models
 from .forms import SpecimenForm, ExpeditionForm, TaxonomyForm, NewSpecimenForm  # Forms
 from .filters import SpecimenFilter     # Filters
-from django.http import Http404, HttpResponseServerError, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponseServerError, HttpResponseRedirect, JsonResponse, HttpResponseNotFound
 from .serializers import SpecimenSerializer, ExpeditionSerializer, TaxonomySerializer
 from rest_framework import generics
 
@@ -211,8 +211,10 @@ class SpecimenDeleteView(DeleteView):
     def form_invalid(self, form):
         messages.error(self.request, 'Error deleting specimen. Please try again.')
         return super().form_invalid(form)
-
-# View that allows to create a new specimen record        
+    
+from django.urls import reverse
+    
+# View that allows to create new specimen record
 class NewSpecimenView(View):
     template_name = 'specimen_catalog/new_specimen.html'
 
@@ -222,18 +224,33 @@ class NewSpecimenView(View):
 
     def post(self, request):
         form = NewSpecimenForm(request.POST)
+
         try:
             if form.is_valid():
-                # Saves the new specimen to the database
                 new_specimen = form.save()
-                # Redirects to the detail page of the newly created specimen
-                return redirect('specimen_detail', pk=new_specimen.pk)
+
+                # Debug print
+                print(f"New specimen created: {new_specimen}")
+
+                # Add a success message
+                messages.success(request, f'New specimen (Specimen {new_specimen.specimen_id}) created successfully.')
+
+                # Debug print
+                print(f"Redirecting to SpecimenDetailView for Specimen {new_specimen.pk}")
+
+                # Redirect to the SpecimenDetailView with the newly created specimen's ID
+                return redirect(reverse('specimen_detail', kwargs={'pk': new_specimen.pk}))
         except Exception as e:
+            # Debug print
+            print(f"Error creating specimen: {e}")
+
             # Handles other exceptions that may occur during form submission
             messages.error(request, f"Error creating specimen: {e}")
 
+        # Render the page with the form and error messages
         return render(request, self.template_name, {'form': form})
 
+    
 # View that allows to create a new taxonomy record 
 class NewTaxonomyView(View):
     template_name = 'specimen_catalog/new_taxonomy.html'
@@ -320,3 +337,5 @@ class TaxonomyListAPIView(generics.ListCreateAPIView):
 class TaxonomyDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Taxonomy.objects.all()
     serializer_class = TaxonomySerializer
+
+

@@ -16,4 +16,4 @@ class TaxonomyAdmin(admin.ModelAdmin):
 # Register the Specimen model with the Django Admin interface
 @admin.register(Specimen)
 class SpecimenAdmin(admin.ModelAdmin):
-    list_display = ('specimen_id', 'catalog_number', 'created', 'taxonomy', 'expedition')
+    list_display = ('specimen_id', 'catalog_number', 'taxonomy', 'expedition')

@@ -39,12 +39,11 @@ class Taxonomy(models.Model):
 class Specimen(models.Model):
     specimen_id = models.AutoField(primary_key=True)
     catalog_number = models.CharField(max_length=50, null=False, blank=True)
-    created = models.IntegerField(default=0)
     expedition = models.ForeignKey('Expedition', on_delete=models.CASCADE, null=True, blank=True)
     taxonomy = models.ForeignKey(Taxonomy, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
-        ordering = ['-specimen_id']    
+        ordering = ['-specimen_id']
 
     def __str__(self):
         return f"Specimen {self.specimen_id}"
