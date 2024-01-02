@@ -135,9 +135,8 @@ class ExpeditionUpdateView(View):
             form = ExpeditionForm(instance=expedition)
             return render(request, self.template_name, {'form': form, 'expedition': expedition})
         except Http404:
-            # Handle the case where the expedition is not found
             messages.error(request, "Expedition not found")
-            return redirect('specimen_detail', pk=pk)  # Redirect to specimen_detail with the same ID
+            return redirect('all_specimens')
 
     def post(self, request, pk):
         expedition = get_object_or_404(Expedition, pk=pk)
@@ -146,12 +145,19 @@ class ExpeditionUpdateView(View):
         if form.is_valid():
             try:
                 form.save()
+
+                # Update associated specimen's expedition
+                specimen = expedition.specimen_set.first()
+                if specimen:
+                    specimen.expedition = expedition
+                    specimen.save()
+
                 # Redirect to specimen detail with the updated expedition's specimen ID
-                return redirect('specimen_detail', pk=expedition.specimen_set.first().pk)
+                return redirect('specimen_detail', pk=specimen.pk)
+
             except Exception as e:
-                # Handle other exceptions that may occur during form saving
                 messages.error(request, f"Error updating expedition: {e}")
-                return redirect('specimen_detail', pk=pk)  # Redirect to specimen_detail with the same ID
+                return redirect('all_specimens')
 
         return render(request, self.template_name, {'form': form, 'expedition': expedition})
 

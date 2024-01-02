@@ -1,6 +1,7 @@
 import factory
 import random
 from .models import Expedition, Taxonomy, Specimen
+from factory.django import DjangoModelFactory
 
 class ExpeditionFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -25,11 +26,12 @@ class TaxonomyFactory(factory.django.DjangoModelFactory):
     genus = factory.LazyFunction(lambda: random.choice(["Genus1", "Genus2", "Genus3"]))
     species = factory.LazyFunction(lambda: random.choice(["Species1", "Species2", "Species3"]))
 
-class SpecimenFactory(factory.django.DjangoModelFactory):
+class SpecimenFactory(DjangoModelFactory):
     class Meta:
         model = Specimen
 
-    specimen_id = factory.Sequence(lambda n: n)
-    catalog_number = factory.Faker('word')
+    catalog_number = factory.Sequence(lambda n: f'Catalog-{n}')  # Ensure unique catalog numbers
     expedition = factory.SubFactory(ExpeditionFactory)
     taxonomy = factory.SubFactory(TaxonomyFactory)
+
+    

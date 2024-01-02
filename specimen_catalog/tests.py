@@ -1,556 +1,361 @@
-import factory
-from django.test import TestCase
-from .models import Expedition, Taxonomy, Specimen
-from .model_factories import ExpeditionFactory, TaxonomyFactory, SpecimenFactory
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.core.exceptions import ValidationError
+from django.contrib.messages.storage.fallback import FallbackStorage
+from django.contrib.auth.models import User
+from django.test import RequestFactory
+from django.contrib import messages
+from django.core.paginator import EmptyPage, Paginator
+from django_filters.filters import BaseInFilter
+from django_filters.filterset import FilterSet
+from django.views.generic import ListView
+from .models import Specimen, Expedition, Taxonomy
+from .model_factories import SpecimenFactory, ExpeditionFactory, TaxonomyFactory
+from .views import AllSpecimensView
+from .filters import SpecimenFilter
 
 class ExpeditionModelTestCase(TestCase):
-    def setUp(self):
-        # Set up any necessary data or configurations before each test
-        pass
-
     def test_expedition_str_method(self):
-        """
-        Test the __str__ method of the Expedition model.
-        """
-        expedition_data = {
-            'expedition_id': 1,
-            'expedition': 'Test Expedition',
-            'continent': 'Test Continent',
-            'country': 'Test Country'
-        }
+            """
+            Test the __str__ method of the Expedition model.
+            """
+            expedition = ExpeditionFactory()
 
-        # Use the ExpeditionFactory to create an Expedition instance
-        expedition = ExpeditionFactory.create(**expedition_data)
-
-        # Check if the __str__ method returns the expected value
-        self.assertEqual(str(expedition), expedition_data['expedition'])
+            # Check if the __str__ method returns the expected value
+            self.assertEqual(str(expedition), expedition.expedition)
 
     def test_expedition_creation(self):
         """
         Test the creation of an Expedition instance.
         """
-        expedition_data = {
-            'expedition_id': 1,
-            'expedition': 'Test Expedition',
-            'continent': 'Test Continent',
-            'country': 'Test Country'
-        }
-
-        # Use the ExpeditionFactory to create an Expedition instance
-        expedition = ExpeditionFactory.create(**expedition_data)
+        expedition_data = ExpeditionFactory()
 
         # Retrieve the created instance from the database
-        saved_expedition = Expedition.objects.get(expedition_id=1)
+        saved_expedition = Expedition.objects.get(expedition_id=expedition_data.expedition_id)
 
         # Check if the retrieved instance has the correct values
-        self.assertEqual(saved_expedition.expedition, expedition_data['expedition'])
-        self.assertEqual(saved_expedition.continent, expedition_data['continent'])
-        self.assertEqual(saved_expedition.country, expedition_data['country'])
+        self.assertEqual(saved_expedition.expedition, expedition_data.expedition)
+        self.assertEqual(saved_expedition.continent, expedition_data.continent)
+        self.assertEqual(saved_expedition.country, expedition_data.country)
 
 
 class TaxonomyModelTestCase(TestCase):
-    def setUp(self):
-        # Set up any necessary data or configurations before each test
-        pass
-
     def test_taxonomy_str_method(self):
         """
         Test the __str__ method of the Taxonomy model.
         """
-        taxonomy_data = {
-            'taxonomy_id': 1,
-            'kingdom': 'Test Kingdom',
-            'phylum': 'Test Phylum',
-            'highest_biostratigraphic_zone': 'Test Zone',
-            'class_name': 'Test Class',
-            'identification_description': 'Test Description',
-            'family': 'Test Family',
-            'genus': 'Test Genus',
-            'species': 'Test Species'
-        }
-
-        # Use YourTaxonomyFactory to create a Taxonomy instance
-        taxonomy = TaxonomyFactory.create(**taxonomy_data)
+        taxonomy = TaxonomyFactory()
 
         # Check if the __str__ method returns the expected value
-        expected_str = f"({taxonomy_data['kingdom']}/{taxonomy_data['phylum']}/" \
-                       f"{taxonomy_data['highest_biostratigraphic_zone']}/" \
-                       f"{taxonomy_data['class_name']}/{taxonomy_data['identification_description']}/" \
-                       f"{taxonomy_data['family']}/{taxonomy_data['genus']}/{taxonomy_data['species']})"
+        expected_str = f"({taxonomy.kingdom}/{taxonomy.phylum}/" \
+                       f"{taxonomy.highest_biostratigraphic_zone}/" \
+                       f"{taxonomy.class_name}/{taxonomy.identification_description}/" \
+                       f"{taxonomy.family}/{taxonomy.genus}/{taxonomy.species})"
         self.assertEqual(str(taxonomy), expected_str)
 
     def test_taxonomy_creation(self):
         """
         Test the creation of a Taxonomy instance.
         """
-        taxonomy_data = {
-            'taxonomy_id': 1,
-            'kingdom': 'Test Kingdom',
-            'phylum': 'Test Phylum',
-            'highest_biostratigraphic_zone': 'Test Zone',
-            'class_name': 'Test Class',
-            'identification_description': 'Test Description',
-            'family': 'Test Family',
-            'genus': 'Test Genus',
-            'species': 'Test Species'
-        }
-
-        # Use YourTaxonomyFactory to create a Taxonomy instance
-        taxonomy = TaxonomyFactory.create(**taxonomy_data)
+        taxonomy_data = TaxonomyFactory()
 
         # Retrieve the created instance from the database
-        saved_taxonomy = Taxonomy.objects.get(taxonomy_id=1)
+        saved_taxonomy = Taxonomy.objects.get(taxonomy_id=taxonomy_data.taxonomy_id)
 
         # Check if the retrieved instance has the correct values
-        self.assertEqual(saved_taxonomy.kingdom, taxonomy_data['kingdom'])
-        self.assertEqual(saved_taxonomy.phylum, taxonomy_data['phylum'])
-        self.assertEqual(saved_taxonomy.highest_biostratigraphic_zone, taxonomy_data['highest_biostratigraphic_zone'])
-        self.assertEqual(saved_taxonomy.class_name, taxonomy_data['class_name'])
-        self.assertEqual(saved_taxonomy.identification_description, taxonomy_data['identification_description'])
-        self.assertEqual(saved_taxonomy.family, taxonomy_data['family'])
-        self.assertEqual(saved_taxonomy.genus, taxonomy_data['genus'])
-        self.assertEqual(saved_taxonomy.species, taxonomy_data['species'])
+        self.assertEqual(saved_taxonomy.kingdom, taxonomy_data.kingdom)
+        self.assertEqual(saved_taxonomy.phylum, taxonomy_data.phylum)
+        self.assertEqual(saved_taxonomy.highest_biostratigraphic_zone, taxonomy_data.highest_biostratigraphic_zone)
+        self.assertEqual(saved_taxonomy.class_name, taxonomy_data.class_name)
+        self.assertEqual(saved_taxonomy.identification_description, taxonomy_data.identification_description)
+        self.assertEqual(saved_taxonomy.family, taxonomy_data.family)
+        self.assertEqual(saved_taxonomy.genus, taxonomy_data.genus)
+        self.assertEqual(saved_taxonomy.species, taxonomy_data.species)
+
 
 class SpecimenModelTestCase(TestCase):
-    def setUp(self):
-        # Set up any necessary data or configurations before each test
-        pass
-
     def test_specimen_str_method(self):
         """
         Test the __str__ method of the Specimen model.
         """
-        specimen_data = {
-            'specimen_id': 1,
-            'catalog_number': 'Test Catalog Number',
-            'expedition': ExpeditionFactory(),
-            'taxonomy': TaxonomyFactory()
-        }
-
-        # Use YourSpecimenFactory to create a Specimen instance
-        specimen = SpecimenFactory.create(**specimen_data)
+        specimen = SpecimenFactory()
 
         # Check if the __str__ method returns the expected value
-        expected_str = f"Specimen {specimen_data['specimen_id']}"
+        expected_str = f"Specimen {specimen.specimen_id}"
         self.assertEqual(str(specimen), expected_str)
 
     def test_specimen_creation(self):
         """
         Test the creation of a Specimen instance.
         """
-        specimen_data = {
-            'specimen_id': 1,
-            'catalog_number': 'Test Catalog Number',
-            'expedition': ExpeditionFactory(),
-            'taxonomy': TaxonomyFactory()
-        }
-
-        # Use YourSpecimenFactory to create a Specimen instance
-        specimen = SpecimenFactory.create(**specimen_data)
+        specimen_data = SpecimenFactory()
 
         # Retrieve the created instance from the database
-        saved_specimen = Specimen.objects.get(specimen_id=1)
+        saved_specimen = Specimen.objects.get(specimen_id=specimen_data.specimen_id)
 
         # Check if the retrieved instance has the correct values
-        self.assertEqual(saved_specimen.catalog_number, specimen_data['catalog_number'])
-        self.assertEqual(saved_specimen.expedition.expedition_id, specimen_data['expedition'].expedition_id)
-        self.assertEqual(saved_specimen.taxonomy.taxonomy_id, specimen_data['taxonomy'].taxonomy_id)
+        self.assertEqual(saved_specimen.catalog_number, specimen_data.catalog_number)
+        self.assertEqual(saved_specimen.expedition.expedition_id, specimen_data.expedition.expedition_id)
+        self.assertEqual(saved_specimen.taxonomy.taxonomy_id, specimen_data.taxonomy.taxonomy_id)
 
+class IndexViewTestCase(TestCase):
+    def test_index_view(self):
+        # Make a GET request to the index view
+        response = self.client.get(reverse('index'))
 
+        # Check if the response has a status code of 200 (OK)
+        self.assertEqual(response.status_code, 200)
 
+        # Check if the correct template is used
+        self.assertTemplateUsed(response, 'specimen_catalog/index.html')
+
+    def test_all_specimens_view(self):
+        # Create some sample specimens for testing
+        SpecimenFactory.create_batch(2)
+
+        # Make a GET request to the all_specimens view
+        response = self.client.get(reverse('all_specimens'))
+
+        # Check if the response has a status code of 200 (OK)
+        self.assertEqual(response.status_code, 200)
 
+        # Check if the correct template is used
+        self.assertTemplateUsed(response, 'specimen_catalog/all_specimens.html')
+
+        # Check if specimens are present in the context
+        self.assertIn('specimens', response.context)
+        self.assertEqual(len(response.context['specimens']), 2)
+
 
+class AllSpecimensViewTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.factory = RequestFactory()
+
+    def setUp(self):
+        # Create some sample specimens for testing
+        SpecimenFactory.create_batch(30)
+
+    def test_all_specimens_view_default(self):
+        """
+        Test the AllSpecimensView with default parameters.
+        """
+        url = reverse('all_specimens')
+        response = self.client.get(url)
 
+        # Check if the response has a status code of 200 (OK)
+        self.assertEqual(response.status_code, 200)
 
+        # Check if the correct template is used
+        self.assertTemplateUsed(response, 'specimen_catalog/all_specimens.html')
 
+        # Check if specimens are present in the context
+        self.assertIn('specimens', response.context)
+        self.assertEqual(len(response.context['specimens']), 20)  # Default page size is 20
 
+    def test_all_specimens_view_filtered(self):
+        """
+        Test the AllSpecimensView with filter parameters.
+        """
+        # Create specimens with specific expedition continent and country
+        SpecimenFactory.create_batch(10, expedition__continent='Asia', expedition__country='China')
+        SpecimenFactory.create_batch(5, expedition__continent='Europe', expedition__country='France')
 
+        url = reverse('all_specimens') + '?expedition__continent=Asia&expedition__country=China'
+        response = self.client.get(url)
 
+        # Check if the response has a status code of 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # Check if the correct template is used
+        self.assertTemplateUsed(response, 'specimen_catalog/all_specimens.html')
 
+        # Check if specimens are present in the context
+        self.assertIn('specimens', response.context)
+        self.assertEqual(len(response.context['specimens']), 10)
 
+
+class ExpeditionAdminTestCase(TestCase):
+    def setUp(self):
+        # Create a superuser
+        self.user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@example.com')
+
+        # Create an Expedition instance
+        self.expedition = Expedition.objects.create(
+            expedition='Test Expedition',
+            continent='Test Continent',
+            country='Test Country'
+        )
+
+        # Create a client and log in as the superuser
+        self.client = Client()
+        self.client.login(username='admin', password='adminpass')
+
+    def test_expedition_admin_list_view(self):
+        # URL for the Expedition admin list view
+        url = reverse('admin:specimen_catalog_expedition_changelist')
+
+        # Ensure the view returns a 200 status code
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Ensure the expedition data is present in the response
+        self.assertContains(response, self.expedition.expedition)
+        self.assertContains(response, self.expedition.continent)
+        self.assertContains(response, self.expedition.country)
+
+    def test_expedition_admin_detail_view(self):
+        # URL for the Expedition admin detail view
+        url = reverse('admin:specimen_catalog_expedition_change', args=[self.expedition.expedition_id])
+
+        # Ensure the view returns a 200 status code
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Ensure the expedition data is present in the response
+        self.assertContains(response, self.expedition.expedition)
+        self.assertContains(response, self.expedition.continent)
+        self.assertContains(response, self.expedition.country)
+
+    def test_expedition_admin_add_view(self):
+        # URL for the Expedition admin add view
+        url = reverse('admin:specimen_catalog_expedition_add')
+
+        # Ensure the view returns a 200 status code
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Ensure the form is present in the response
+        self.assertContains(response, 'form')
+
+    def test_expedition_admin_change_view(self):
+        # URL for the Expedition admin change view
+        url = reverse('admin:specimen_catalog_expedition_change', args=[self.expedition.expedition_id])
+
+        # Ensure the view returns a 200 status code
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Ensure the form is present in the response
+        self.assertContains(response, 'form')
+
+
+class TaxonomyAdminTestCase(TestCase):
+    def setUp(self):
+        # Create a superuser
+        self.user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@example.com')
+
+        # Create a Taxonomy instance using the factory
+        self.taxonomy = TaxonomyFactory()
+
+        # Create a client and log in as the superuser
+        self.client = Client()
+        self.client.login(username='admin', password='adminpass')
+
+    def test_taxonomy_admin_list_view(self):
+        # URL for the Taxonomy admin list view
+        url = reverse('admin:specimen_catalog_taxonomy_changelist')
+
+        # Ensure the view returns a 200 status code
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Ensure the taxonomy data is present in the response
+        self.assertContains(response, self.taxonomy.kingdom)
+        self.assertContains(response, self.taxonomy.phylum)
+        self.assertContains(response, self.taxonomy.highest_biostratigraphic_zone)
+        self.assertContains(response, self.taxonomy.class_name)
+        self.assertContains(response, self.taxonomy.family)
+        self.assertContains(response, self.taxonomy.genus)
+        self.assertContains(response, self.taxonomy.species)
+
+    def test_taxonomy_admin_detail_view(self):
+        # URL for the Taxonomy admin detail view
+        url = reverse('admin:specimen_catalog_taxonomy_change', args=[self.taxonomy.taxonomy_id])
+
+        # Ensure the view returns a 200 status code
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Ensure the taxonomy data is present in the response
+        self.assertContains(response, self.taxonomy.kingdom)
+        self.assertContains(response, self.taxonomy.phylum)
+        self.assertContains(response, self.taxonomy.highest_biostratigraphic_zone)
+        self.assertContains(response, self.taxonomy.class_name)
+        self.assertContains(response, self.taxonomy.family)
+        self.assertContains(response, self.taxonomy.genus)
+        self.assertContains(response, self.taxonomy.species)
+
+    def test_taxonomy_admin_add_view(self):
+        # URL for the Taxonomy admin add view
+        url = reverse('admin:specimen_catalog_taxonomy_add')
+
+        # Ensure the view returns a 200 status code
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Ensure the form is present in the response
+        self.assertContains(response, 'form')
+
+    def test_taxonomy_admin_change_view(self):
+        # URL for the Taxonomy admin change view
+        url = reverse('admin:specimen_catalog_taxonomy_change', args=[self.taxonomy.taxonomy_id])
+
+        # Ensure the view returns a 200 status code
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Ensure the form is present in the response
+        self.assertContains(response, 'form')
+
+class SpecimenAdminTestCase(TestCase):
+    def setUp(self):
+        # Create a superuser
+        self.user = User.objects.create_superuser(username='admin', password='adminpass', email='admin@example.com')
+
+        # Create a Specimen instance using the factory
+        self.specimen = SpecimenFactory()
+
+        # Create a client and log in as the superuser
+        self.client = Client()
+        self.client.login(username='admin', password='adminpass')
+
+    def test_specimen_list_view(self):
+        # Access the Specimen list view in the admin
+        url = reverse('admin:specimen_catalog_specimen_changelist')
+        response = self.client.get(url)
+
+        # Check that the response is successful
+        self.assertEqual(response.status_code, 200)
+
+        # Check that the Specimen instance is present in the response
+        self.assertContains(response, str(self.specimen.catalog_number))
+
+    def test_specimen_detail_view(self):
+        # Access the Specimen detail view in the admin
+        url = reverse('admin:specimen_catalog_specimen_change', args=[self.specimen.pk])
+        response = self.client.get(url)
+
+        # Check that the response is successful
+        self.assertEqual(response.status_code, 200)
+
+        # Check that the Specimen instance details are present in the response
+        self.assertContains(response, str(self.specimen.catalog_number))
+        self.assertContains(response, str(self.specimen.expedition))
+        self.assertContains(response, str(self.specimen.taxonomy))
+
+    def test_specimen_add_view(self):
+        # Access the Specimen add view in the admin
+        url = reverse('admin:specimen_catalog_specimen_add')
+        response = self.client.get(url)
+
+        # Check that the response is successful
+        self.assertEqual(response.status_code, 200)
+
+        # Check that the form contains the expected fields
+        self.assertContains(response, 'id_catalog_number')
+        self.assertContains(response, 'id_expedition')
+        self.assertContains(response, 'id_taxonomy')
 
 
-
-
-
-
-
-
-
-
-
-
-
-# from django.test import TestCase, Client
-# from django.contrib.auth.models import User
-# from .models import Expedition, Taxonomy, Specimen
-# from django.urls import reverse, resolve
-# from .views import index, AllSpecimensView, SpecimenUpdateView, SpecimenDetailView, ExpeditionUpdateView, TaxonomyUpdateView, SpecimenDeleteView, NewSpecimenView, NewTaxonomyView, NewExpeditionView
-# from .serializers import ExpeditionSerializer, TaxonomySerializer, SpecimenSerializer
-# from .filters import SpecimenFilter
-# from .forms import SpecimenForm
-
-
-# #Testing the models
-# # Expedition
-# class ExpeditionModelTest(TestCase):
-#     def setUp(self):
-#         # Set up data for the tests
-#         self.expedition_data = {
-#             'expedition': 'Test Expedition',
-#             'continent': 'Test Continent',
-#             'country': 'Test Country',
-#         }
-
-#     def test_expedition_creation(self):
-#         # Test if an Expedition instance is created correctly
-#         expedition = Expedition.objects.create(**self.expedition_data)
-
-#         self.assertEqual(expedition.expedition, 'Test Expedition')
-#         self.assertEqual(expedition.continent, 'Test Continent')
-#         self.assertEqual(expedition.country, 'Test Country')
-
-#     def test_expedition_str_method(self):
-#         # Test the __str__ method of the Expedition model
-#         expedition = Expedition.objects.create(**self.expedition_data)
-
-#         self.assertEqual(str(expedition), 'Test Expedition')
-
-# class TaxonomyModelTest(TestCase):
-#     def setUp(self):
-#         # Set up data for the tests
-#         self.taxonomy_data = {
-#             'kingdom': 'Test Kingdom',
-#             'phylum': 'Test Phylum',
-#             'highest_biostratigraphic_zone': 'Test Zone',
-#             'class_name': 'Test Class',
-#             'identification_description': 'Test Description',
-#             'family': 'Test Family',
-#             'genus': 'Test Genus',
-#             'species': 'Test Species',
-#         }
-
-#     def test_taxonomy_creation(self):
-#         # Test if a Taxonomy instance is created correctly
-#         taxonomy = Taxonomy.objects.create(**self.taxonomy_data)
-
-#         self.assertEqual(taxonomy.kingdom, 'Test Kingdom')
-#         self.assertEqual(taxonomy.phylum, 'Test Phylum')
-#         self.assertEqual(taxonomy.highest_biostratigraphic_zone, 'Test Zone')
-#         self.assertEqual(taxonomy.class_name, 'Test Class')
-#         self.assertEqual(taxonomy.identification_description, 'Test Description')
-#         self.assertEqual(taxonomy.family, 'Test Family')
-#         self.assertEqual(taxonomy.genus, 'Test Genus')
-#         self.assertEqual(taxonomy.species, 'Test Species')
-
-#     def test_taxonomy_str_method(self):
-#         # Test the __str__ method of the Taxonomy model
-#         taxonomy = Taxonomy.objects.create(**self.taxonomy_data)
-
-#         expected_str = (
-#             "(Test Kingdom/"
-#             "Test Phylum/"
-#             "Test Zone/"
-#             "Test Class/"
-#             "Test Description/"
-#             "Test Family/"
-#             "Test Genus/"
-#             "Test Species)"
-#         )
-
-#         self.assertEqual(str(taxonomy), expected_str)
-
-# #Specimen
-# class SpecimenModelTest(TestCase):
-#     def setUp(self):
-#         # Set up data for the tests
-#         self.expedition_data = {
-#             'expedition': 'Test Expedition',
-#             'continent': 'Test Continent',
-#             'country': 'Test Country',
-#         }
-
-#         self.taxonomy_data = {
-#             'kingdom': 'Test Kingdom',
-#             'phylum': 'Test Phylum',
-#             'highest_biostratigraphic_zone': 'Test Zone',
-#             'class_name': 'Test Class',
-#             'identification_description': 'Test Description',
-#             'family': 'Test Family',
-#             'genus': 'Test Genus',
-#             'species': 'Test Species',
-#         }
-
-#         self.specimen_data = {
-#             'catalog_number': 'Test Catalog Number',
-#         }
-
-#     def test_specimen_creation(self):
-#         # Test if a Specimen instance is created correctly
-#         expedition = Expedition.objects.create(**self.expedition_data)
-#         taxonomy = Taxonomy.objects.create(**self.taxonomy_data)
-
-#         specimen = Specimen.objects.create(
-#             catalog_number=self.specimen_data['catalog_number'],
-#             expedition=expedition,
-#             taxonomy=taxonomy,
-#         )
-
-#         self.assertEqual(specimen.catalog_number, 'Test Catalog Number')
-#         self.assertEqual(specimen.expedition, expedition)
-#         self.assertEqual(specimen.taxonomy, taxonomy)
-
-#     def test_specimen_str_method(self):
-#         # Test the __str__ method of the Specimen model
-#         expedition = Expedition.objects.create(**self.expedition_data)
-#         taxonomy = Taxonomy.objects.create(**self.taxonomy_data)
-
-#         specimen = Specimen.objects.create(
-#             catalog_number=self.specimen_data['catalog_number'],
-#             expedition=expedition,
-#             taxonomy=taxonomy,
-#         )
-
-#         expected_str = f"Specimen {specimen.specimen_id}"
-
-#         self.assertEqual(str(specimen), expected_str)
-
-
-# #Testing all the urls
-# class TestUrls(TestCase):
-#     def test_url_mapping(self):
-#         # Test the URL mapping for the 'all_specimens' view
-#         url = reverse('all_specimens')
-#         self.assertEqual(url, '/all_specimens/')
-#         resolver = resolve('/all_specimens/')
-#         self.assertEqual(resolver.func.view_class, AllSpecimensView)
-
-#         # Test the URL mapping for the 'specimen_detail' view with a sample specimen ID
-#         url = reverse('specimen_detail', args=[1])
-#         self.assertEqual(url, '/specimen/detail/1/')
-#         resolver = resolve('/specimen/detail/1/')
-#         self.assertEqual(resolver.func.view_class, SpecimenDetailView)
-
-#         # Test the URL mapping for the 'expedition_update' view with a sample expedition ID
-#         url = reverse('expedition_update', args=[1])
-#         self.assertEqual(url, '/expedition_update/1/')
-#         resolver = resolve('/expedition_update/1/')
-#         self.assertEqual(resolver.func.view_class, ExpeditionUpdateView)
-
-#         # Test the URL mapping for the 'taxonomy_update' view with a sample specimen ID
-#         url = reverse('taxonomy_update', args=[1])
-#         self.assertEqual(url, '/taxonomy_update/1/')
-#         resolver = resolve('/taxonomy_update/1/')
-#         self.assertEqual(resolver.func.view_class, TaxonomyUpdateView)
-
-#         url = reverse('new_specimen')
-#         self.assertEqual(url, '/new_specimen/')
-#         resolver = resolve('/new_specimen/')
-#         self.assertEqual(resolver.func.view_class, NewSpecimenView)
-
-#     def test_url_resolves_to_correct_view(self):
-#         # Test if the URL resolves to the correct view function for 'index'
-#         resolver = resolve('/')
-#         self.assertEqual(resolver.func, index)
-
-#         # Test if the URL resolves to the correct view function for 'all_specimens'
-#         resolver = resolve('/all_specimens/')
-#         self.assertEqual(resolver.func.view_class, AllSpecimensView)
-
-#         # Test if the URL resolves to the correct view function for 'specimen_detail' with a sample specimen ID
-#         resolver = resolve('/specimen/detail/1/')
-#         self.assertEqual(resolver.func.view_class, SpecimenDetailView)
-
-#         # Test if the URL resolves to the correct view function for 'specimen_update' with a sample specimen ID
-#         resolver = resolve('/specimen/1/update/')
-#         self.assertEqual(resolver.func.view_class, SpecimenUpdateView)
-
-#         # Test if the URL resolves to the correct view function for 'expedition_update' with a sample expedition ID
-#         resolver = resolve('/expedition_update/1/')
-#         self.assertEqual(resolver.func.view_class, ExpeditionUpdateView)
-
-#         # Test if the URL resolves to the correct view function for 'taxonomy_update' with a sample specimen ID
-#         resolver = resolve('/taxonomy_update/1/')
-#         self.assertEqual(resolver.func.view_class, TaxonomyUpdateView)
-
-#         # Test if the URL resolves to the correct view function for 'specimen_delete' with a sample specimen ID
-#         resolver = resolve('/specimen/1/delete/')
-#         self.assertEqual(resolver.func.view_class, SpecimenDeleteView)
-
-#         # Test if the URL resolves to the correct view function for 'new_specimen'
-#         resolver = resolve('/new_specimen/')
-#         self.assertEqual(resolver.func.view_class, NewSpecimenView)
-
-#         # Test if the URL resolves to the correct view function for 'new_taxonomy'
-#         resolver = resolve('/new_taxonomy/')
-#         self.assertEqual(resolver.func.view_class, NewTaxonomyView)
-
-#         # Test if the URL resolves to the correct view function for 'new_expedition'
-#         resolver = resolve('/new_expedition/')
-#         self.assertEqual(resolver.func.view_class, NewExpeditionView)
-
-#     def resolve_by_name(self, name, args=None):
-#         # Helper function to resolve URLs by name
-#         url = reverse(name, args=args)
-#         resolver = self.client.resolve(url)
-#         return resolver
-
-
-
-# class SpecimenSerializerTest(TestCase):
-#     def setUp(self):
-#         self.expedition = Expedition.objects.create(expedition='Sample Expedition', continent='Sample Continent', country='Sample Country')
-#         self.taxonomy = Taxonomy.objects.create(kingdom='Sample Kingdom', phylum='Sample Phylum', highest_biostratigraphic_zone='Sample Zone',
-#                                                 class_name='Sample Class', identification_description='Sample Description',
-#                                                 family='Sample Family', genus='Sample Genus', species='Sample Species')
-#         self.specimen_data = {'catalog_number': 'Sample Catalog', 'expedition': self.expedition.expedition_id, 'taxonomy': self.taxonomy.taxonomy_id}
-#         self.serializer = SpecimenSerializer(data=self.specimen_data)
-
-#     def test_valid_data(self):
-#         self.assertTrue(self.serializer.is_valid())
-
-#     def test_serialized_data(self):
-#         self.serializer.is_valid()
-#         data = self.serializer.data
-#         self.assertEqual(data, self.specimen_data)
-
-# class TaxonomySerializerTest(TestCase):
-#     def setUp(self):
-#         self.taxonomy_data = {'kingdom': 'Sample Kingdom', 'phylum': 'Sample Phylum', 'highest_biostratigraphic_zone': 'Sample Zone',
-#                               'class_name': 'Sample Class', 'identification_description': 'Sample Description',
-#                               'family': 'Sample Family', 'genus': 'Sample Genus', 'species': 'Sample Species'}
-#         self.serializer = TaxonomySerializer(data=self.taxonomy_data)
-
-#     def test_valid_data(self):
-#         self.assertTrue(self.serializer.is_valid())
-
-#     def test_serialized_data(self):
-#         self.serializer.is_valid()
-#         data = self.serializer.data
-#         self.assertEqual(data, self.taxonomy_data)
-
-# class SpecimenSerializerTest(TestCase):
-#     def setUp(self):
-#         self.expedition_data = {'expedition': 'Sample Expedition', 'continent': 'Sample Continent', 'country': 'Sample Country'}
-#         self.taxonomy_data = {'kingdom': 'Sample Kingdom', 'phylum': 'Sample Phylum', 'highest_biostratigraphic_zone': 'Sample Zone',
-#                               'class_name': 'Sample Class', 'identification_description': 'Sample Description',
-#                               'family': 'Sample Family', 'genus': 'Sample Genus', 'species': 'Sample Species'}
-#         self.specimen_data = {'catalog_number': 'Sample Catalog', 'expedition': self.expedition_data, 'taxonomy': self.taxonomy_data}
-#         self.serializer = SpecimenSerializer(data=self.specimen_data)
-
-#     def test_valid_data(self):
-#         self.assertTrue(self.serializer.is_valid())
-
-#     def test_serialized_data(self):
-#         self.serializer.is_valid()
-#         data = self.serializer.data
-#         expected_data = {'catalog_number': 'Sample Catalog', 'expedition': self.expedition_data, 'taxonomy': self.taxonomy_data}
-#         self.assertEqual(data, expected_data)
-
-# # Tests for forms
-# class SpecimenFormTest(TestCase):
-#     def test_valid_form(self):
-#         # Create valid data for the form
-#         form_data = {
-#             'catalog_number': '1234.56.78.9012',
-#         }
-
-#         # Create the form instance with the valid data
-#         form = SpecimenForm(data=form_data)
-
-#         # Check if the form is valid
-#         self.assertTrue(form.is_valid())
-
-#     def test_invalid_form(self):
-#         # Create invalid data for the form
-#         form_data = {
-#             'catalog_number': 'invalid_catalog_number',
-#         }
-
-#         # Create the form instance with the invalid data
-#         form = SpecimenForm(data=form_data)
-
-#         # Check if the form is not valid
-#         self.assertFalse(form.is_valid())
-
-#     def test_clean_catalog_number(self):
-#         # Create a form instance
-#         form = SpecimenForm()
-
-#         # Set a valid catalog number
-#         valid_catalog_number = '1234.56.78.9012'
-#         form.cleaned_data = {'catalog_number': valid_catalog_number}
-
-#         # Call the clean_catalog_number method
-#         cleaned_catalog_number = form.clean_catalog_number()
-
-#         # Check if the cleaned catalog number is equal to the original valid catalog number
-#         self.assertEqual(cleaned_catalog_number, valid_catalog_number)
-
-# class SpecimenFilterTest(TestCase):
-#     def setUp(self):
-#         # Create taxonomy instances
-#         taxonomy1 = Taxonomy.objects.create(kingdom="Animalia", phylum="Charadriiformes",
-#                                            highest_biostratigraphic_zone="Vertebrata", class_name="Aves",
-#                                            identification_description="Charadriiformes", family="Stercorariidae",
-#                                            genus="Stercorarius", species="Stercorarius maccormicki")
-        
-#         # Create expedition instance
-#         expedition1 = Expedition.objects.create(expedition="Sample Expedition", continent="Europe", country="Spain")
-
-#         # Create specimen instance and associate it with taxonomy and expedition
-#         Specimen.objects.create(catalog_number="10451524", taxonomy=taxonomy1, expedition=expedition1)
-
-#     def test_filter_by_species(self):
-#         filter = SpecimenFilter({'taxonomy__species': 'Stercorarius maccormicki'}, queryset=Specimen.objects.all())
-#         self.assertEqual(len(filter.qs), 1)
-
-#     def test_filter_by_continent(self):
-#         filter = SpecimenFilter({'expedition__continent': 'Europe'}, queryset=Specimen.objects.all())
-#         self.assertEqual(len(filter.qs), 1)
-
-# #testing admin page
-
-# class AdminPageTest(TestCase):
-#     def setUp(self):
-#         # Create a superuser for logging into the admin interface
-#         self.admin_user = User.objects.create_superuser(username='coder', password='coder12', email='code@mail.com')
-        
-#         # Create some sample data for the models
-#         self.expedition = Expedition.objects.create(expedition='Sample Expedition', continent='Sample Continent', country='Sample Country')
-#         self.taxonomy = Taxonomy.objects.create(kingdom='Sample Kingdom', phylum='Sample Phylum', highest_biostratigraphic_zone='Sample Zone',
-#                                                 class_name='Sample Class', identification_description='Sample Description',
-#                                                 family='Sample Family', genus='Sample Genus', species='Sample Species')
-#         self.specimen = Specimen.objects.create(catalog_number='Sample Catalog', expedition=self.expedition, taxonomy=self.taxonomy)
-
-#     def test_admin_page_accessible(self):
-#         # Log in with the superuser credentials
-#         self.client.force_login(self.admin_user)
-        
-#         # Access the admin page for Expedition
-#         response = self.client.get('/admin/specimen_catalog/expedition/')
-#         self.assertEqual(response.status_code, 200)
-
-#         # Access the admin page for Taxonomy
-#         response = self.client.get('/admin/specimen_catalog/taxonomy/')
-#         self.assertEqual(response.status_code, 200)
-
-#         # Access the admin page for Specimen
-#         response = self.client.get('/admin/specimen_catalog/specimen/')
-#         self.assertEqual(response.status_code, 200)
-
-#     def test_admin_page_displays_data(self):
-#         # Log in with the superuser credentials
-#         self.client.force_login(self.admin_user)
-        
-#         # Check if the Expedition data is displayed on the admin page
-#         response = self.client.get('/admin/specimen_catalog/expedition/')
-#         self.assertContains(response, 'Sample Expedition')
-
-#         # Check if the Taxonomy data is displayed on the admin page
-#         response = self.client.get('/admin/specimen_catalog/taxonomy/')
-#         self.assertContains(response, 'Sample Kingdom')
-
-#         # Check if the Specimen data is displayed on the admin page
-#         response = self.client.get('/admin/specimen_catalog/specimen/')
-#         self.assertContains(response, 'Sample Catalog')

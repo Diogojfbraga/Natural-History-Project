@@ -17,4 +17,3 @@ class TaxonomyAdmin(admin.ModelAdmin):
 @admin.register(Specimen)
 class SpecimenAdmin(admin.ModelAdmin):
     list_display = ('specimen_id', 'catalog_number', 'taxonomy', 'expedition')
-
