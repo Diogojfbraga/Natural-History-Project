@@ -51,10 +51,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-
-    'django.contrib.messages.middleware.MessageMiddleware',    
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', 
+    'django.contrib.sessions.middleware.SessionMiddleware',   
 ]
 
 ROOT_URLCONF = 'natural_history_project.urls'

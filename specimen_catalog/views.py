@@ -1,18 +1,25 @@
-# Imports libraries
+# Django-related imports
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from django.views.generic import ListView, DetailView
-from django.views.generic.edit import DeleteView, UpdateView
-from django.contrib import messages     # Messages
-from django.urls import reverse_lazy, reverse    # URL Handing
+from django.views.generic import ListView, DetailView, DeleteView, UpdateView
+from django.contrib import messages  # Handling messages
+from django.urls import reverse_lazy, reverse  # URL Handling
 from django.core.paginator import Paginator, EmptyPage  # Paginator
 from django.core.exceptions import ValidationError
-from .models import Specimen, Expedition, Taxonomy      # Models
-from .forms import SpecimenForm, ExpeditionForm, TaxonomyForm, NewSpecimenForm  # Forms
-from .filters import SpecimenFilter     # Filters
 from django.http import Http404, HttpResponseServerError, HttpResponseRedirect, JsonResponse, HttpResponseNotFound
+
+# Model and Form imports
+from .models import Specimen, Expedition, Taxonomy  # Models
+from .forms import SpecimenForm, ExpeditionForm, TaxonomyForm, NewSpecimenForm  # Forms
+
+# Filter import
+from .filters import SpecimenFilter  # Filters
+
+# REST framework imports
 from .serializers import SpecimenSerializer, ExpeditionSerializer, TaxonomySerializer
 from rest_framework import generics
+
+# Template-related import
 from django.views.generic import TemplateView
 
 
@@ -20,16 +27,19 @@ from django.views.generic import TemplateView
 class IndexView(TemplateView):
     template_name = 'specimen_catalog/index.html'
 
+# Django ListView for displaying all specimens
 class AllSpecimensView(ListView):
     model = Specimen
     template_name = 'specimen_catalog/all_specimens.html'
     context_object_name = 'specimens'
     queryset = Specimen.objects.all()
-    filterset_class = SpecimenFilter 
+    filterset_class = SpecimenFilter  # Specifies filter class for queryset filtering
 
     def get_context_data(self, **kwargs):
+        # Overrides to include additional context data
         context = super().get_context_data(**kwargs)
         
+        # Tries to apply filters to the queryset
         filter = None
         try:
             filter = SpecimenFilter(self.request.GET, queryset=self.get_queryset())
@@ -37,6 +47,7 @@ class AllSpecimensView(ListView):
             messages.error(self.request, f"Invalid filter parameters: {e}")
             filter = SpecimenFilter(queryset=Specimen.objects.none())
 
+        # Sets up pagination for the specimens
         paginator = Paginator(filter.qs, 20)
         page = self.request.GET.get('page', 1)
 
@@ -45,22 +56,27 @@ class AllSpecimensView(ListView):
         except EmptyPage:
             specimens = paginator.page(paginator.num_pages)
         
+        # Adds specimens, pagination, and filter to the context
         context['specimens'] = specimens
         context['page_obj'] = specimens
         context['filter'] = filter
 
+        # Displays success message
         messages.success(self.request, "View rendered successfully!")
 
         return context
 
     def get_queryset(self):
+        # Overrides to customize the queryset based on filter parameters
         queryset = super().get_queryset()
         
+        # Defines filter parameters based on expedition continent and country
         filter_params = {
             'expedition__continent__icontains': self.request.GET.get('expedition__continent', ''),
             'expedition__country__icontains': self.request.GET.get('expedition__country', ''),
         }
 
+        # Applys filters and order by specimen_id in descending order
         return queryset.filter(**filter_params).order_by('-specimen_id')
 
 # Displays a single speciment with its details, taxonomy and expedtion
@@ -89,7 +105,7 @@ class SpecimenDetailView(DetailView):
             messages.error(self.request, f"Error fetching specimen details: {e}")
             return context  # Return the context without additional data
 
-# View that allows to update the specimen record
+# Allows to Update the Specimen as a form
 class SpecimenUpdateView(UpdateView):
     model = Specimen
     template_name = 'specimen_catalog/specimen_update.html'
@@ -114,7 +130,7 @@ class SpecimenUpdateView(UpdateView):
             return self.form_invalid(form)  # Redirect to the form with error messages
 
     def get_success_url(self):
-        # Redirect to specimen_detail with the updated specimen's ID
+        # Redirects to specimen_detail with the updated specimen's ID
         return reverse_lazy('specimen_detail', kwargs={'pk': self.object.pk})
     
     def get(self, request, *args, **kwargs):
@@ -131,32 +147,37 @@ class ExpeditionUpdateView(View):
     template_name = 'specimen_catalog/expedition_update.html'
 
     def get(self, request, pk):
+        # Handles GET request for updating expedition information
         try:
             expedition = get_object_or_404(Expedition, pk=pk)
             form = ExpeditionForm(instance=expedition)
             return render(request, self.template_name, {'form': form, 'expedition': expedition})
         except Http404:
+            # Handles case where expedition is not found
             messages.error(request, "Expedition not found")
             return redirect('all_specimens')
 
     def post(self, request, pk):
+        # Handles POST request for updating expedition information
         expedition = get_object_or_404(Expedition, pk=pk)
         form = ExpeditionForm(request.POST, instance=expedition)
         
         if form.is_valid():
             try:
+                # Saves updated expedition information
                 form.save()
 
-                # Update associated specimen's expedition
+                # Updates associated specimen's expedition
                 specimen = expedition.specimen_set.first()
                 if specimen:
                     specimen.expedition = expedition
                     specimen.save()
 
-                # Redirect to specimen detail with the updated expedition's specimen ID
+                # Redirects to specimen detail with the updated expedition's specimen ID
                 return redirect('specimen_detail', pk=specimen.pk)
 
             except Exception as e:
+                # Handles errors during expedition update
                 messages.error(request, f"Error updating expedition: {e}")
                 return redirect('all_specimens')
 
@@ -200,25 +221,30 @@ class SpecimenDeleteView(DeleteView):
     success_url = reverse_lazy('all_specimens')
 
     def get(self, request, *args, **kwargs):
+        # Handles GET request for specimen deletion confirmation
         try:
             return super().get(request, *args, **kwargs)
         except Http404:
+            # Handles case where specimen is not found
             messages.error(request, "Specimen not found")
             return redirect('all_specimens')
 
     def form_valid(self, form):
+        # Handles successful form submission for specimen deletion
         try:
             response = super().form_valid(form)
             messages.success(self.request, 'Specimen deleted successfully.')
             return render(self.request, 'specimen_catalog/specimen_deleted.html')
         except Exception as e:
+            # Handles errors during specimen deletion
             messages.error(self.request, f"Error deleting specimen: {e}")
             return redirect('all_specimens')
 
     def form_invalid(self, form):
+        # Handles invalid form submission for specimen deletion
         messages.error(self.request, 'Error deleting specimen. Please try again.')
         return super().form_invalid(form)
-    
+
 # View that allows to create a new specimen record
 class NewSpecimenView(View):
     template_name = 'specimen_catalog/new_specimen.html'
@@ -231,32 +257,23 @@ class NewSpecimenView(View):
         form = NewSpecimenForm(request.POST)
 
         try:
-            # Check if the form is not empty
+            # Checks if the form is not empty
             if request.POST:
                 if form.is_valid():
                     new_specimen = form.save()
 
-                    # Debug print
-                    print(f"New specimen created: {new_specimen}")
-
-                    # Add a success message
+                    # Adds a success message
                     messages.success(request, f'New specimen (Specimen {new_specimen.specimen_id}) created successfully.')
 
-                    # Debug print
-                    print(f"Redirecting to SpecimenDetailView for Specimen {new_specimen.pk}")
-
-                    # Redirect to the SpecimenDetailView with the newly created specimen's ID
+                    # Redirects to the SpecimenDetailView with the newly created specimen's ID
                     return redirect(reverse('specimen_detail', kwargs={'pk': new_specimen.pk}))
 
                 # If the form is not valid, handle the error
                 else:
-                    # Debug print
-                    print("Form is not valid")
-
                     # Handles form validation errors
                     messages.error(request, "Error creating specimen. Please correct the form errors.")
             else:
-                # Display an error message if the form is empty
+                # Displays an error message if the form is empty
                 messages.error(request, "Error creating specimen. Form is empty.")
 
         except Exception as e:
@@ -268,7 +285,6 @@ class NewSpecimenView(View):
 
         # Render the page with the form and error messages
         return render(request, self.template_name, {'form': form})
-
     
 # View that allows to create a new taxonomy record 
 class NewTaxonomyView(View):
