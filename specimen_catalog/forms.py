@@ -143,6 +143,15 @@ class NewSpecimenForm(forms.ModelForm):
             'taxonomy': 'Taxonomy',
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+        expedition = cleaned_data.get('expedition')
+
+        if not expedition:
+            raise forms.ValidationError('Expedition is required.')
+
+        return cleaned_data
+
     def clean_catalog_number(self):
         catalog_number = self.cleaned_data['catalog_number']
         # Your validation logic for catalog number here

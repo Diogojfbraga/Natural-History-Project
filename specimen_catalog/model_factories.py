@@ -3,6 +3,7 @@ import random
 from .models import Expedition, Taxonomy, Specimen
 from factory.django import DjangoModelFactory
 
+# Expedition testing data
 class ExpeditionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Expedition
@@ -12,6 +13,7 @@ class ExpeditionFactory(factory.django.DjangoModelFactory):
     continent = factory.LazyFunction(lambda: random.choice(["Asia", "Europe", "Africa"]))
     country = factory.LazyFunction(lambda: random.choice(["Country1", "Country2", "Country3"]))
 
+# Taxonomy testing data
 class TaxonomyFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Taxonomy
@@ -26,6 +28,7 @@ class TaxonomyFactory(factory.django.DjangoModelFactory):
     genus = factory.LazyFunction(lambda: random.choice(["Genus1", "Genus2", "Genus3"]))
     species = factory.LazyFunction(lambda: random.choice(["Species1", "Species2", "Species3"]))
 
+# Specimen testing data
 class SpecimenFactory(DjangoModelFactory):
     class Meta:
         model = Specimen

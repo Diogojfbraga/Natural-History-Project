@@ -4,7 +4,7 @@ from django.views import View
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import DeleteView, UpdateView
 from django.contrib import messages     # Messages
-from django.urls import reverse_lazy    # URL Handing
+from django.urls import reverse_lazy, reverse    # URL Handing
 from django.core.paginator import Paginator, EmptyPage  # Paginator
 from django.core.exceptions import ValidationError
 from .models import Specimen, Expedition, Taxonomy      # Models
@@ -13,11 +13,12 @@ from .filters import SpecimenFilter     # Filters
 from django.http import Http404, HttpResponseServerError, HttpResponseRedirect, JsonResponse, HttpResponseNotFound
 from .serializers import SpecimenSerializer, ExpeditionSerializer, TaxonomySerializer
 from rest_framework import generics
+from django.views.generic import TemplateView
 
 
 # Index page view
-def index(request):
-    return render(request, 'specimen_catalog/index.html')
+class IndexView(TemplateView):
+    template_name = 'specimen_catalog/index.html'
 
 class AllSpecimensView(ListView):
     model = Specimen
@@ -218,9 +219,7 @@ class SpecimenDeleteView(DeleteView):
         messages.error(self.request, 'Error deleting specimen. Please try again.')
         return super().form_invalid(form)
     
-from django.urls import reverse
-    
-# View that allows to create new specimen record
+# View that allows to create a new specimen record
 class NewSpecimenView(View):
     template_name = 'specimen_catalog/new_specimen.html'
 
@@ -232,20 +231,34 @@ class NewSpecimenView(View):
         form = NewSpecimenForm(request.POST)
 
         try:
-            if form.is_valid():
-                new_specimen = form.save()
+            # Check if the form is not empty
+            if request.POST:
+                if form.is_valid():
+                    new_specimen = form.save()
 
-                # Debug print
-                print(f"New specimen created: {new_specimen}")
+                    # Debug print
+                    print(f"New specimen created: {new_specimen}")
 
-                # Add a success message
-                messages.success(request, f'New specimen (Specimen {new_specimen.specimen_id}) created successfully.')
+                    # Add a success message
+                    messages.success(request, f'New specimen (Specimen {new_specimen.specimen_id}) created successfully.')
 
-                # Debug print
-                print(f"Redirecting to SpecimenDetailView for Specimen {new_specimen.pk}")
+                    # Debug print
+                    print(f"Redirecting to SpecimenDetailView for Specimen {new_specimen.pk}")
 
-                # Redirect to the SpecimenDetailView with the newly created specimen's ID
-                return redirect(reverse('specimen_detail', kwargs={'pk': new_specimen.pk}))
+                    # Redirect to the SpecimenDetailView with the newly created specimen's ID
+                    return redirect(reverse('specimen_detail', kwargs={'pk': new_specimen.pk}))
+
+                # If the form is not valid, handle the error
+                else:
+                    # Debug print
+                    print("Form is not valid")
+
+                    # Handles form validation errors
+                    messages.error(request, "Error creating specimen. Please correct the form errors.")
+            else:
+                # Display an error message if the form is empty
+                messages.error(request, "Error creating specimen. Form is empty.")
+
         except Exception as e:
             # Debug print
             print(f"Error creating specimen: {e}")
