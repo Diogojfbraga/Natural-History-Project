@@ -33,7 +33,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'specimen_catalog.apps.SpecimenCatalogConfig', #My app
-    'django_extensions',    #Added other extensions
     'django_filters',       # Filter feature
     'rest_framework',
     'django.contrib.admin',
