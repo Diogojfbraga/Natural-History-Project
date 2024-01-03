@@ -1,14 +1,14 @@
-<!-- index.html page -->
 {% extends 'specimen_catalog/base.html' %}
 
 {% block title %}Natural History Project Page{% endblock %}
 
 {% block content %}
-    <div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="text-center">
-            <h1>Welcome to Natural History Project</h1>
-            <p>This is the index page.</p>
-            <a class="btn btn-primary" href="{% url 'all_specimens' %}">All Specimens</a>
-        </div>
+    <div class="container text-center mt-5">
+        <h1 class="mb-4">Welcome to Natural History Project</h1>
+        <p class="lead">This is the index page.</p>
+        <a class="btn btn-primary mt-5" href="{% url 'all_specimens' %}">All Specimens</a>
     </div>
+
+    <!-- Includes the content from api_urls.html -->
+    {% include 'specimen_catalog/api_urls.html' %}
 {% endblock %}

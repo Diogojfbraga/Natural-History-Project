@@ -19,5 +19,19 @@ class SpecimenSerializer(serializers.ModelSerializer):
         model = Specimen
         fields = '__all__'
 
+    def create(self, validated_data):
+        expedition_data = validated_data.pop('expedition', None)
+        taxonomy_data = validated_data.pop('taxonomy', None)
+
+        specimen = Specimen.objects.create(**validated_data)
+
+        if expedition_data:
+            Expedition.objects.create(specimen=specimen, **expedition_data)
+
+        if taxonomy_data:
+            Taxonomy.objects.create(specimen=specimen, **taxonomy_data)
+
+        return specimen
+
 
         

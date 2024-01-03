@@ -26,13 +26,12 @@ SECRET_KEY = 'django-insecure-jo5y0)-%_!g6_2+l8@b71mlaz^4(b^@#bsejn488_qg1y8ex%p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [".awsapprunner.com"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    # I wrote this code #
     'specimen_catalog.apps.SpecimenCatalogConfig', #My app
     'django_extensions',    #Added other extensions
     'django_filters',       # Filter feature
@@ -43,8 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-
 ]
 
 MIDDLEWARE = [
@@ -54,10 +51,10 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-
-    'django.contrib.messages.middleware.MessageMiddleware',    
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', 
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",   
 ]
 
 ROOT_URLCONF = 'natural_history_project.urls'
@@ -126,6 +123,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 STATICFILES_DIRS = [
     '/home/dynos/University/AdvWebDev - Mid term project/natural_history_project/specimen_catalog/static',

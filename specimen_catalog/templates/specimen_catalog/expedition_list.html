@@ -1,5 +1,4 @@
-<!-- yourapp/templates/yourapp/expedition_list.html -->
-{% extends "base.html" %}
+{% extends 'specimen_catalog/base.html' %}
 
 {% block content %}
   <h2>All Expeditions</h2>
@@ -10,8 +9,6 @@
         Expedition Name: {{ expedition.expedition }}<br>
         Continent: {{ expedition.continent }}<br>
         Country: {{ expedition.country }}<br>
-        State/Province: {{ expedition.state_province }}<br>
-        Term: {{ expedition.term }}<br>
       </li>
     {% endfor %}
   </ul>

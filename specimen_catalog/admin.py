@@ -1,4 +1,3 @@
-
 # Imports the models 
 from django.contrib import admin
 from .models import Expedition, Taxonomy, Specimen
@@ -6,7 +5,7 @@ from .models import Expedition, Taxonomy, Specimen
 # Register the Expedition model with the Django Admin interface
 @admin.register(Expedition)
 class ExpeditionAdmin(admin.ModelAdmin):
-    list_display = ('expedition_id', 'expedition', 'continent', 'country', 'term')
+    list_display = ('expedition_id', 'expedition', 'continent', 'country')
     
 # Register the Taxonomy model with the Django Admin interface
 @admin.register(Taxonomy)
@@ -17,4 +16,4 @@ class TaxonomyAdmin(admin.ModelAdmin):
 # Register the Specimen model with the Django Admin interface
 @admin.register(Specimen)
 class SpecimenAdmin(admin.ModelAdmin):
-    list_display = ('specimen_id', 'catalog_number', 'created', 'taxonomy', 'expedition')
+    list_display = ('specimen_id', 'catalog_number', 'taxonomy', 'expedition')

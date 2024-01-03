@@ -1,0 +1,59 @@
+.
+├── db.sqlite3
+├── manage.py
+├── models.png
+├── natural_history_project
+│   ├── asgi.py
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── requirements.txt
+├── specimen_catalog
+│   ├── admin.py
+│   ├── apps.py
+│   ├── filters.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── scripts
+│   │   ├── populate_specimen_catalog.py
+│   │   └── resource.csv
+│   ├── serializers.py
+│   ├── static
+│   │   └── css
+│   │       └── styles.css
+│   ├── templates
+│   │   └── specimen_catalog
+│   │       ├── all_specimens.html
+│   │       ├── base.html
+│   │       ├── expedition_list.html
+│   │       ├── expedition_update.html
+│   │       ├── filters.html
+│   │       ├── footer.html
+│   │       ├── header.html
+│   │       ├── index.html
+│   │       ├── master.html
+│   │       ├── new_expedition.html
+│   │       ├── new_specimen.html
+│   │       ├── new_taxonomy.html
+│   │       ├── pagination.html
+│   │       ├── specimen_delete_confirm.html
+│   │       ├── specimen_deleted.html
+│   │       ├── specimen_detail.html
+│   │       ├── specimen_list.html
+│   │       ├── specimen_table.html
+│   │       ├── specimen_update.html
+│   │       ├── taxonomy_update.html
+│   │       └── title.html
+│   ├── templatetags
+│   │   └── tags.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+└── tree.txt
+
+9 directories, 47 files

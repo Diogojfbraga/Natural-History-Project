@@ -26,13 +26,15 @@
         function resetFilters() {
             // Resets filter values to empty string
             var form = document.getElementById('filterForm');
-            var filterFields = form.querySelectorAll('[name^="taxonomy"]');
+            var filterFields = form.querySelectorAll('[name^="taxonomy"], [name^="expedition"]');
             filterFields.forEach(function (field) {
                 field.value = '';
             });
-
+    
             // Triggers a form submission
             form.submit();
         }
     </script>
 {% endblock %}
+
+
