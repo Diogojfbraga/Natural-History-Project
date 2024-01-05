@@ -32,6 +32,3 @@ class SpecimenSerializer(serializers.ModelSerializer):
             Taxonomy.objects.create(specimen=specimen, **taxonomy_data)
 
         return specimen
-
-
-        
