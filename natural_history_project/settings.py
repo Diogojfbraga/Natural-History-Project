@@ -122,7 +122,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    '/home/dynos/University/AdvWebDev - Mid term project/natural_history_project/specimen_catalog/static',
+    BASE_DIR / "specimen_catalog" / "static",
 ]
 
 # Default primary key field type

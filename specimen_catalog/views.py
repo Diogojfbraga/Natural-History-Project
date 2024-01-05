@@ -61,9 +61,6 @@ class AllSpecimensView(ListView):
         context['page_obj'] = specimens
         context['filter'] = filter
 
-        # Displays success message
-        messages.success(self.request, "View rendered successfully!")
-
         return context
 
     def get_queryset(self):
