@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-jo5y0)-%_!g6_2+l8@b71mlaz^4(b^@#bsejn488_qg1y8ex%p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['3.81.7.144', '127.0.0.1']
+ALLOWED_HOSTS = ['4.234.149.109', '127.0.0.1']
 
 # Application definition
 
@@ -122,7 +122,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    '/home/dynos/University/AdvWebDev - Mid term project/natural_history_project/specimen_catalog/static',
+    BASE_DIR / "specimen_catalog" / "static",
 ]
 
 # Default primary key field type
@@ -130,5 +130,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+
