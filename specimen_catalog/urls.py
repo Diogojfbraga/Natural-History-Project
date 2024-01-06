@@ -1,8 +1,10 @@
 # Importing necessary libraries
-from django.urls import path, include
+from django.urls import path
 from . import views
-from .views import (IndexView, AllSpecimensView, SpecimenDetailView, ExpeditionUpdateView, TaxonomyUpdateView, 
-                    SpecimenDeleteView, NewSpecimenView, NewTaxonomyView, NewExpeditionView,
+from .views import (IndexView, AllSpecimensView, SpecimenDetailView, 
+                    ExpeditionUpdateView, TaxonomyUpdateView, 
+                    SpecimenDeleteView, NewSpecimenView, 
+                    NewTaxonomyView, NewExpeditionView,
                     )
 
 # URL patterns defines routes for specimen_catalog app

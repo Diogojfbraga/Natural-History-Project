@@ -6,14 +6,14 @@ from django.contrib import messages  # Handling messages
 from django.urls import reverse_lazy, reverse  # URL Handling
 from django.core.paginator import Paginator, EmptyPage  # Paginator
 from django.core.exceptions import ValidationError
-from django.http import Http404, HttpResponseServerError, HttpResponseRedirect, JsonResponse, HttpResponseNotFound
+from django.http import Http404, HttpResponseServerError, HttpResponseNotFound
 
 # Model and Form imports
 from .models import Specimen, Expedition, Taxonomy  # Models
 from .forms import SpecimenForm, ExpeditionForm, TaxonomyForm, NewSpecimenForm  # Forms
 
 # Filter import
-from .filters import SpecimenFilter  # Filters
+from .filters import SpecimenFilter  
 
 # REST framework imports
 from .serializers import SpecimenSerializer, ExpeditionSerializer, TaxonomySerializer
@@ -73,7 +73,7 @@ class AllSpecimensView(ListView):
             'expedition__country__icontains': self.request.GET.get('expedition__country', ''),
         }
 
-        # Applys filters and order by specimen_id in descending order
+        # Applies filters and order by specimen_id in descending order
         return queryset.filter(**filter_params).order_by('-specimen_id')
 
 # Displays a single speciment with its details, taxonomy and expedtion

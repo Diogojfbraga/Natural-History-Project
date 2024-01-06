@@ -1,22 +1,14 @@
 from django.test import RequestFactory, TestCase, Client
 from django.urls import reverse
-from django.core.exceptions import ValidationError
-from django.contrib import messages
-from django.core.paginator import EmptyPage, Paginator
-from django_filters.filters import BaseInFilter
-from django_filters.filterset import FilterSet
-from django.views.generic import ListView
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from django.contrib.auth.models import User
 
-from specimen_catalog.forms import ExpeditionForm, NewSpecimenForm, TaxonomyForm
-from specimen_catalog.models import Expedition, Specimen, Taxonomy
-from specimen_catalog.views import AllSpecimensView, NewSpecimenView, SpecimenDeleteView
-from specimen_catalog.model_factories import ExpeditionFactory, SpecimenFactory, TaxonomyFactory
-from specimen_catalog.serializers import ExpeditionSerializer, SpecimenSerializer, TaxonomySerializer
+from .forms import ExpeditionForm, NewSpecimenForm, TaxonomyForm
+from .models import Expedition, Specimen, Taxonomy
+from .model_factories import ExpeditionFactory, SpecimenFactory, TaxonomyFactory
 
 from django.contrib.messages import get_messages
 
