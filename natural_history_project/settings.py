@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['4.234.149.109', '127.0.0.1']
 INSTALLED_APPS = [
     'specimen_catalog.apps.SpecimenCatalogConfig', #My app
     'django_filters',       # Filter feature
+    'django_extensions',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
